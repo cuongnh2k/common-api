@@ -1,0 +1,27 @@
+spring:
+  profiles.active: dev
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  messages:
+    always-use-message-format: false
+    basename: messages.validation
+    cache-duration: 1
+    encoding: UTF-8
+    fallback-to-system-locale: true
+    use-code-as-default-message: false
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    locations: classpath:migration
+    table: SCHEMA_HISTORY
+logging:
+  level:
+    com.amazonaws.util.EC2MetadataUtils: error
+mybatis:
+  mapper-locations: classpath*:/mybatis/*.mapper.xml,classpath*:/mybatis/*/*.mapper.xml,classpath*:/mybatis/*/*/*.mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
