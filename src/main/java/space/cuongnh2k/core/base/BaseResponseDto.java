@@ -44,6 +44,12 @@ public class BaseResponseDto {
                 .message(message).build(), HttpStatus.OK);
     }
 
+    public static ResponseEntity<BaseResponseDto> success(Object data) {
+        return new ResponseEntity<>(BaseResponseDto.builder()
+                .success(true)
+                .data(data).build(), HttpStatus.OK);
+    }
+
     public static ResponseEntity<BaseResponseDto> success(String message, Object data) {
         return new ResponseEntity<>(BaseResponseDto.builder()
                 .success(true)

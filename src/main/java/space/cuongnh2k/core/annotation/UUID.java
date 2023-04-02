@@ -24,8 +24,6 @@ public @interface UUID {
 
     Class<? extends Payload>[] payload() default {};
 
-    String value();
-
     @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
     @Retention(RUNTIME)
     @Documented
