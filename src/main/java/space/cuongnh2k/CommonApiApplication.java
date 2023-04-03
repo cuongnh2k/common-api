@@ -12,7 +12,6 @@ public class CommonApiApplication extends SpringBootServletInitializer {
         SpringApplication.run(CommonApiApplication.class, args);
     }
 
-    // Sử dụng khi build file war, deploy tomcat
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(CommonApiApplication.class);
