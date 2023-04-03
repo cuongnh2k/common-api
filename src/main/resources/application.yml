@@ -21,6 +21,12 @@ spring:
 logging:
   level:
     com.amazonaws.util.EC2MetadataUtils: error
+    space.cuongnh2k: DEBUG
+    org:
+      mybatis: INFO
+      flywaydb: INFO
+      hibernate: INFO
+      springframework: INFO
 mybatis:
   mapper-locations: classpath*:/mybatis/*.mapper.xml,classpath*:/mybatis/*/*.mapper.xml,classpath*:/mybatis/*/*/*.mapper.xml
   configuration:

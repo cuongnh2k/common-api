@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="space.cuongnh2k.rest.account.AccountRepository">
+    <select id="getOneByEmail" parameterType="java.lang.String"
+            resultType="space.cuongnh2k.rest.account.query.GetAccountRss">
+        /* space.cuongnh2k.rest.account.AccountRepository.getOneByEmail */
+        SELECT EMAIL, PASSWORD
+        FROM ACCOUNT
+        WHERE IS_DELETED = 'NO'
+          AND EMAIL = #{email}
+    </select>
+
+    <insert id="createAccount" parameterType="space.cuongnh2k.rest.account.query.CreateAccountPrt">
+        /* space.cuongnh2k.rest.account.AccountRepository.createAccount */
+        INSERT INTO ACCOUNT (ID, EMAIL, PASSWORD, FIRST_NAME, LAST_NAME)
+        VALUES (#{id}, #{email}, #{password}, #{firstName}, #{lastName});
+    </insert>
+</mapper>
