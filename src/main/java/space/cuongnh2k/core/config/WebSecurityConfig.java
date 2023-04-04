@@ -3,7 +3,6 @@ package space.cuongnh2k.core.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,10 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import space.cuongnh2k.core.filter.AuthFilter;
 import space.cuongnh2k.core.utils.UserDetailServiceUtil;
-import space.cuongnh2k.rest.account.AccountService;
-import space.cuongnh2k.rest.account.dto.CreateAccountReq;
 
 import java.util.Properties;
 
@@ -31,7 +27,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final AuthFilter authFilter;
+    private final FilterConfig filterConfig;
     private final UserDetailServiceUtil userDetailServiceUtil;
 
     @Value("${application.email.username}")
@@ -90,23 +86,23 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated());
-        http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(filterConfig, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    CommandLineRunner run(AccountService accountService) {
-        return args -> {
-            try {
-                accountService.createAccount(CreateAccountReq.builder()
-                        .email("cuongnh2k@gmail.com")
-                        .password("123")
-                        .firstName("Cường")
-                        .lastName("Nguyễn")
-                        .build());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        };
-    }
+//    @Bean
+//    CommandLineRunner run(AccountService accountService) {
+//        return args -> {
+//            try {
+//                accountService.createAccount(CreateAccountReq.builder()
+//                        .email("cuongnh2k@gmail.com")
+//                        .password("123")
+//                        .firstName("Cường")
+//                        .lastName("Nguyễn")
+//                        .build());
+//            } catch (Exception e) {
+//                log.error(e.getMessage());
+//            }
+//        };
+//    }
 }

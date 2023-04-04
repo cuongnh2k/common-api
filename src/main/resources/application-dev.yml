@@ -17,6 +17,10 @@ application:
   email:
     username: 1
     password: 2
+  jwt:
+    secret-key: a3f52f3a-5d8f-4f80-bc97-8d51a9fc4c9c
+    access-token-age: 3600000
+    refresh-token-age: 31536000000
 spring.datasource:
   url: jdbc:mysql://localhost:3306/COMMON?allowPublicKeyRetrieval=true&useSSL=false
   username: root

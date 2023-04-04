@@ -4,7 +4,7 @@
     <select id="getOneByEmail" parameterType="java.lang.String"
             resultType="space.cuongnh2k.rest.account.query.GetAccountRss">
         /* space.cuongnh2k.rest.account.AccountRepository.getOneByEmail */
-        SELECT EMAIL, PASSWORD
+        SELECT ID, EMAIL, PASSWORD
         FROM ACCOUNT
         WHERE IS_DELETED = 'NO'
           AND EMAIL = #{email}

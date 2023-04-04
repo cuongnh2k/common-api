@@ -25,7 +25,6 @@ import space.cuongnh2k.core.base.BaseResponseDto;
 @Log4j2
 @ControllerAdvice
 public class BasicErrorAdvice {
-
     @ExceptionHandler(value = {
             HttpRequestMethodNotSupportedException.class,
             HttpMediaTypeNotSupportedException.class,
@@ -37,7 +36,8 @@ public class BasicErrorAdvice {
             HttpMessageNotWritableException.class,
             MissingServletRequestPartException.class,
             NoHandlerFoundException.class,
-            AsyncRequestTimeoutException.class
+            AsyncRequestTimeoutException.class,
+//            RuntimeException.class
     })
     public ResponseEntity<BaseResponseDto> handleException(Exception ex) {
         HttpStatus status;
