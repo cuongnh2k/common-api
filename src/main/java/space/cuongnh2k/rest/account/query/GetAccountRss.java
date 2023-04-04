@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetAccountRss {
+    private String id;
     private String email;
     private String password;
 }

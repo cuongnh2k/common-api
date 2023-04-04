@@ -1,4 +1,4 @@
-package space.cuongnh2k.core.filter;
+package space.cuongnh2k.core.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,8 +12,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class AuthFilter extends OncePerRequestFilter {
-
+public class FilterConfig extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         filterChain.doFilter(request, response);

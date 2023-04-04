@@ -1,12 +1,13 @@
 package space.cuongnh2k.rest.file;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import space.cuongnh2k.core.enums.AccessTypeEnum;
-import space.cuongnh2k.rest.file.dto.consume.Test;
 
 @Validated
 @RestController
@@ -16,9 +17,9 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping
-    public ResponseEntity<String> upload(@RequestParam AccessTypeEnum access,
+    public ResponseEntity<String> upload(@RequestParam AccessTypeEnum access
 //                                         @RequestParam(required = false) MultipartFile[] files,
-                                         @RequestBody @Valid Test test) {
+    ) {
 //        return new ResponseEntity<>(fileService.uploadFile(files), HttpStatus.OK);
         return null;
     }

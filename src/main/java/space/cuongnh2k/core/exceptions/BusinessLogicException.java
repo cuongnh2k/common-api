@@ -3,6 +3,7 @@ package space.cuongnh2k.core.exceptions;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import space.cuongnh2k.core.enums.BusinessLogicEnum;
 
 @Getter
 @Setter
@@ -10,8 +11,8 @@ import lombok.Setter;
 public class BusinessLogicException extends RuntimeException {
     private int errorCode;
 
-    public BusinessLogicException(String message, int errorCode) {
-        super(message);
-        this.errorCode = errorCode;
+    public BusinessLogicException(BusinessLogicEnum businessLogic) {
+        super(businessLogic.getMessage());
+        this.errorCode = businessLogic.getErrorCode();
     }
 }
