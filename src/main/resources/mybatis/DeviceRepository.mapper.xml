@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="space.cuongnh2k.rest.device.DeviceRepository">
+    <select id="getDevice" parameterType="space.cuongnh2k.rest.device.query.GetDevicePrt"
+            resultType="space.cuongnh2k.rest.device.query.DeviceRss">
+        /* space.cuongnh2k.rest.device.DeviceRepository.getDevice */
+        SELECT ID
+        FROM DEVICE
+        WHERE IS_DELETED = 'NO'
+          AND ACCOUNT_ID = #{accountId}
+          AND USER_AGENT = #{userAgent}
+    </select>
+
+    <insert id="createDevice" parameterType="space.cuongnh2k.rest.device.query.CreateDevicePrt">
+        /* space.cuongnh2k.rest.device.DeviceRepository.createDevice */
+        INSERT INTO DEVICE (ID, ACCOUNT_ID, ACCESS_TOKEN, REFRESH_TOKEN, USER_AGENT, ACTIVATION_CODE)
+        VALUES (#{id}, #{accountId}, #{accessToken}, #{refreshToken}, #{userAgent}, #{activationCode})
+    </insert>
+
+    <update id="updateDevice" parameterType="space.cuongnh2k.rest.device.query.UpdateDevicePrt">
+        /* space.cuongnh2k.rest.device.DeviceRepository.updateDevice */
+        UPDATE DEVICE
+        SET ACCESS_TOKEN  = #{accessToken},
+            REFRESH_TOKEN = #{refreshToken}
+        WHERE ID = #{id};
+    </update>
+</mapper>
