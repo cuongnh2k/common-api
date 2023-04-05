@@ -20,8 +20,14 @@
     <update id="updateDevice" parameterType="space.cuongnh2k.rest.device.query.UpdateDevicePrt">
         /* space.cuongnh2k.rest.device.DeviceRepository.updateDevice */
         UPDATE DEVICE
-        SET ACCESS_TOKEN  = #{accessToken},
-            REFRESH_TOKEN = #{refreshToken}
-        WHERE ID = #{id};
+        <set>
+            <if test="accessToken != null">ACCESS_TOKEN = #{accessToken},</if>
+            <if test="refreshToken != null">REFRESH_TOKEN = #{refreshToken},</if>
+            <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
+        </set>
+        <where>
+            <if test="id != null">ID = #{id}</if>
+            <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
+        </where>
     </update>
 </mapper>

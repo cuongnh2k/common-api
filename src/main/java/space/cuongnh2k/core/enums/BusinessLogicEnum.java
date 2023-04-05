@@ -11,7 +11,9 @@ public enum BusinessLogicEnum {
     BUSINESS_LOGIC_0003(-3, "Wrong password"),
     BUSINESS_LOGIC_0004(-4, "Add device fail"),
     BUSINESS_LOGIC_0005(-5, "Update device fail"),
-    BUSINESS_LOGIC_0006(-6, "Account is not activated");
+    BUSINESS_LOGIC_0006(-6, "Account is not activated"),
+    BUSINESS_LOGIC_0007(-7, "Account activation failed"),
+    BUSINESS_LOGIC_0008(-8, "Device activation failed");
     private final Integer errorCode;
     private final String message;
 }

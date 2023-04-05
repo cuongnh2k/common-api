@@ -83,9 +83,9 @@ public class WebSecurityConfig {
         http.cors();
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/**").permitAll()
-                .anyRequest().authenticated());
+//        http.authorizeHttpRequests(auth -> auth
+//                .requestMatchers("/**").permitAll()
+//                .anyRequest().authenticated());
         http.addFilterBefore(filterConfig, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

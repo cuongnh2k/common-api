@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import space.cuongnh2k.core.base.BaseResponseDto;
+import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
 import space.cuongnh2k.rest.account.dto.CreateAccountReq;
-import space.cuongnh2k.rest.account.dto.LoginReq;
 
 @Validated
 @RestController
@@ -25,8 +25,9 @@ public class AccountController {
         return BaseResponseDto.success("Create account successful");
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<BaseResponseDto> login(@RequestBody @Valid LoginReq req) {
-        return BaseResponseDto.success("Login successful", accountService.login(req));
+    @PostMapping("/active")
+    public ResponseEntity<BaseResponseDto> activeAccount(@RequestBody @Valid ActiveAccountReq req) {
+        accountService.activeAccount(req);
+        return BaseResponseDto.success("Active account successful");
     }
 }

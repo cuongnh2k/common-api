@@ -7,6 +7,7 @@ import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.CreateAccountPrt;
 import space.cuongnh2k.rest.account.query.GetAccountPrt;
+import space.cuongnh2k.rest.account.query.UpdateAccountPrt;
 
 import java.util.List;
 
@@ -24,5 +25,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public int createAccount(CreateAccountPrt prt) {
         return sqlSession.insert("space.cuongnh2k.rest.account.AccountRepository.createAccount", prt);
+    }
+
+    @Override
+    public int updateAccount(UpdateAccountPrt prt) {
+        return sqlSession.update("space.cuongnh2k.rest.account.AccountRepository.updateAccount",prt);
     }
 }

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
-import space.cuongnh2k.rest.account.dto.LoginRes;
+import space.cuongnh2k.rest.auth.dto.LoginRes;
 import space.cuongnh2k.rest.account.query.AccountRss;
 
 import java.util.Date;

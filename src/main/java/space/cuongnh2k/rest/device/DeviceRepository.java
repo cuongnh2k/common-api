@@ -11,5 +11,6 @@ public interface DeviceRepository {
     List<DeviceRss> getDevice(GetDevicePrt prt);
 
     int createDevice(CreateDevicePrt prt);
+
     int updateDevice(UpdateDevicePrt prt);
 }

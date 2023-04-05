@@ -1,4 +1,4 @@
-package space.cuongnh2k.rest.account.dto;
+package space.cuongnh2k.rest.auth.dto;
 
 import lombok.Builder;
 import lombok.Getter;
