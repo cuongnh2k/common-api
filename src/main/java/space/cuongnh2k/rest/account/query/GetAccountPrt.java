@@ -1,12 +1,12 @@
 package space.cuongnh2k.rest.account.query;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GetAccountRss {
-    private String id;
+@AllArgsConstructor
+public class GetAccountPrt {
     private String email;
-    private String password;
 }

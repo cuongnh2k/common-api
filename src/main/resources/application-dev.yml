@@ -15,8 +15,8 @@ application:
     public: cuongnh2k-bucket-public
     private: cuongnh2k-bucket-private
   email:
-    username: 1
-    password: 2
+    username: cuongnh3@rikkeisoft.com
+    password: qzbhybpogwafideq
   jwt:
     secret-key: a3f52f3a-5d8f-4f80-bc97-8d51a9fc4c9c
     access-token-age: 3600000

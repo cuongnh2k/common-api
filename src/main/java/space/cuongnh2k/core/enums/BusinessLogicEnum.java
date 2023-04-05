@@ -8,7 +8,10 @@ import lombok.Getter;
 public enum BusinessLogicEnum {
     BUSINESS_LOGIC_0001(-1, "Account registration failed"),
     BUSINESS_LOGIC_0002(-2, "Account does not exist"),
-    BUSINESS_LOGIC_0003(-3, "Wrong password");
+    BUSINESS_LOGIC_0003(-3, "Wrong password"),
+    BUSINESS_LOGIC_0004(-4, "Add device fail"),
+    BUSINESS_LOGIC_0005(-5, "Update device fail"),
+    BUSINESS_LOGIC_0006(-6, "Account is not activated");
     private final Integer errorCode;
     private final String message;
 }

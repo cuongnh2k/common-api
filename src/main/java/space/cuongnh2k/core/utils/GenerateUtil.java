@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
 import space.cuongnh2k.rest.account.dto.LoginRes;
-import space.cuongnh2k.rest.account.query.GetAccountRss;
+import space.cuongnh2k.rest.account.query.AccountRss;
 
 import java.util.Date;
 
@@ -27,7 +27,7 @@ public class GenerateUtil {
     @Value("${application.jwt.refresh-token-age}")
     private Long REFRESH_TOKEN_AGE;
 
-    public LoginRes generateToken(GetAccountRss accountRss) {
+    public LoginRes generateToken(AccountRss accountRss) {
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
         return LoginRes.builder()
                 .accessToken(JWT.create()
