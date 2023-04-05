@@ -6,8 +6,15 @@
         /* space.cuongnh2k.rest.account.AccountRepository.getAccount */
         SELECT ID, EMAIL, PASSWORD, ACTIVATION_CODE, IS_ACTIVATED
         FROM ACCOUNT
-        WHERE IS_DELETED = 'NO'
-          AND EMAIL = #{email}
+        <where>
+            IS_DELETED = 'NO'
+            <if test="email != null">
+                AND EMAIL = #{email}
+            </if>
+            <if test="id != null">
+                AND ID = #{id}
+            </if>
+        </where>
     </select>
 
     <insert id="createAccount" parameterType="space.cuongnh2k.rest.account.query.CreateAccountPrt">
@@ -15,4 +22,16 @@
         INSERT INTO ACCOUNT (ID, EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, ACTIVATION_CODE)
         VALUES (#{id}, #{email}, #{password}, #{firstName}, #{lastName}, #{activationCode});
     </insert>
+
+    <update id="updateAccount" parameterType="space.cuongnh2k.rest.account.query.UpdateAccountPrt">
+        /* space.cuongnh2k.rest.account.AccountRepository.updateAccount */
+        UPDATE ACCOUNT
+        <set>
+            <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
+        </set>
+        <where>
+            <if test="id != null">ID = #{id}</if>
+            <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
+        </where>
+    </update>
 </mapper>

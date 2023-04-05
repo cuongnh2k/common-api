@@ -23,7 +23,7 @@ public class UserDetailServiceUtil implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        List<AccountRss> listAccountRss = accountRepository.getAccount(new GetAccountPrt(email));
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder().email(email).build());
         if (CollectionUtils.isEmpty(listAccountRss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0002);
         }
