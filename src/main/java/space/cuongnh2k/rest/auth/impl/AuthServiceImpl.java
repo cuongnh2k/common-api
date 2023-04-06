@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import space.cuongnh2k.core.config.SendEmailUtil;
+import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
@@ -36,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final AccountRepository accountRepository;
     private final DeviceRepository deviceRepository;
     private final DaoAuthenticationProvider daoAuthenticationProvider;
-    private final GenerateUtil generateUtil;
+    private final JwtCrypto jwtCrypto;
     private final SendEmailUtil sendEmailUtil;
     private final HttpServletRequest request;
 
@@ -56,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
                 .accountId(listAccountRss.get(0).getId())
                 .userAgent(request.getHeader(USER_AGENT))
                 .build());
-        LoginRes loginRes = generateUtil.generateToken(listAccountRss.get(0));
+        LoginRes loginRes = jwtCrypto.encode(listAccountRss.get(0));
         String activationCode = UUID.randomUUID().toString();
         String deviceId = UUID.randomUUID().toString();
         if (CollectionUtils.isEmpty(listDeviceRss)) {

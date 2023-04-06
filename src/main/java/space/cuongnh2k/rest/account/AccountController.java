@@ -30,6 +30,4 @@ public class AccountController {
         accountService.activeAccount(req);
         return BaseResponseDto.success("Active account successful");
     }
-
-    @PostMapping
 }
