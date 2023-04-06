@@ -21,11 +21,12 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
+import space.cuongnh2k.core.crypto.JwtCrypto;
+import space.cuongnh2k.core.enums.TokenTypeEnum;
 import space.cuongnh2k.core.utils.URIPathUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,14 +39,14 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 public class FilterConfig extends OncePerRequestFilter {
     private final ApplicationContext applicationContext;
     private final MessageSource messageSource;
+    private final JwtCrypto jwtCrypto;
+
     @Value("${server.servlet.context-path}")
     private String CONTEXT_PATH;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (URIPathUtil.contact(CONTEXT_PATH, "/").startsWith(request.getRequestURI())) {
-            filterChain.doFilter(request, response);
-        }
+        response.setContentType(APPLICATION_JSON_VALUE);
         HandlerMethod handlerMethod = null;
         try {
             RequestMappingHandlerMapping req2HandlerMapping = (RequestMappingHandlerMapping) applicationContext.getBean("requestMappingHandlerMapping");
@@ -58,28 +59,23 @@ public class FilterConfig extends OncePerRequestFilter {
         } finally {
             logger.debug("URI = " + request.getRequestURI() + ", handlerMethod = " + handlerMethod);
         }
-        String bearer = request.getHeader(AUTHORIZATION);
-        List<String> errors = new ArrayList<>();
+        List<String> listError = new ArrayList<>();
         if (handlerMethod != null) {
             Privileges privilegeAnnotation = handlerMethod.getMethodAnnotation(Privileges.class);
             if (privilegeAnnotation != null) {
-                List<String> allowPrivileges = Arrays.asList(privilegeAnnotation.value());
-                if (!CollectionUtils.isEmpty(allowPrivileges)) {
-                    if (allowPrivileges.contains("")) {
-                        filterChain.doFilter(request, response);
-                    } else {
-                        if (!StringUtils.hasText(bearer)) {
-                            errors.add("Token is empty");
-                        }
+                String bearer = request.getHeader(AUTHORIZATION);
+                if (!StringUtils.hasText(bearer)) {
+                    listError.add("Token is empty");
+                } else {
+                    if( URIPathUtil.contact(CONTEXT_PATH, "/").s)
+                    List<String> resultDecode = jwtCrypto.decode(TokenTypeEnum.ACCESS_TOKEN);
+                    if (resultDecode != null) {
+                        listError.addAll(resultDecode);
                     }
                 }
-            } else {
-                errors.add("Private");
             }
         }
-        if (!CollectionUtils.isEmpty(errors)) {
-            response.setContentType(APPLICATION_JSON_VALUE);
-            response.setStatus(HttpStatus.OK.value());
+        if (!CollectionUtils.isEmpty(listError)) {
             new ObjectMapper().writeValue(
                     response.getOutputStream()
                     , BaseResponseDto.builder()
@@ -87,8 +83,9 @@ public class FilterConfig extends OncePerRequestFilter {
                             .errorCode(HttpStatus.UNAUTHORIZED.value())
                             .message(StringUtils.capitalize(
                                     messageSource.getMessage("UnauthorizedExceptionAdvice", null, LocaleContextHolder.getLocale())))
-                            .data(errors)
+                            .data(listError)
                             .build());
         }
+        filterChain.doFilter(request, response);
     }
 }
