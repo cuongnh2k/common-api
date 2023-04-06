@@ -1,5 +1,8 @@
 package space.cuongnh2k.core.config;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,8 +25,11 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.core.crypto.JwtCrypto;
+import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
-import space.cuongnh2k.core.utils.URIPathUtil;
+import space.cuongnh2k.rest.device.DeviceRepository;
+import space.cuongnh2k.rest.device.query.DeviceRss;
+import space.cuongnh2k.rest.device.query.GetDevicePrt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Log4j2
@@ -40,9 +47,9 @@ public class FilterConfig extends OncePerRequestFilter {
     private final ApplicationContext applicationContext;
     private final MessageSource messageSource;
     private final JwtCrypto jwtCrypto;
-
-    @Value("${server.servlet.context-path}")
-    private String CONTEXT_PATH;
+    private final DeviceRepository deviceRepository;
+    @Value("${application.jwt.secret-key}")
+    private String SECRET_KEY;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -67,10 +74,26 @@ public class FilterConfig extends OncePerRequestFilter {
                 if (!StringUtils.hasText(bearer)) {
                     listError.add("Token is empty");
                 } else {
-                    if( URIPathUtil.contact(CONTEXT_PATH, "/").s)
-                    List<String> resultDecode = jwtCrypto.decode(TokenTypeEnum.ACCESS_TOKEN);
+                    List<String> resultDecode;
+                    if (request.getRequestURI().contains("/device/refresh-token")) {
+                        resultDecode = jwtCrypto.decode(TokenTypeEnum.REFRESH_TOKEN);
+                    } else {
+                        resultDecode = jwtCrypto.decode(TokenTypeEnum.ACCESS_TOKEN);
+                    }
                     if (resultDecode != null) {
                         listError.addAll(resultDecode);
+                    } else {
+                        String token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
+                        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY.getBytes())).build().verify(token);
+                        List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
+                                .accountId(decodedJWT.getSubject())
+                                .userAgent(request.getHeader(USER_AGENT))
+                                .build());
+                        if (CollectionUtils.isEmpty(listDeviceRss)) {
+                            listError.add("Thiết bị đã đăng xuất");
+                        } else if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
+                            listError.add("Thiết bị chưa được kích hoạt");
+                        }
                     }
                 }
             }

@@ -4,7 +4,7 @@
     <select id="getDevice" parameterType="space.cuongnh2k.rest.device.query.GetDevicePrt"
             resultType="space.cuongnh2k.rest.device.query.DeviceRss">
         /* space.cuongnh2k.rest.device.DeviceRepository.getDevice */
-        SELECT ID
+        SELECT ID, IS_ACTIVATED
         FROM DEVICE
         WHERE IS_DELETED = 'NO'
           AND ACCOUNT_ID = #{accountId}

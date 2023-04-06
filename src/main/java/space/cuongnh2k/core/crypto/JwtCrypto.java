@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.auth.dto.LoginRes;
+import space.cuongnh2k.rest.device.dto.RefreshTokenRes;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,9 +54,9 @@ public class JwtCrypto {
                 .build();
     }
 
-    public LoginRes encode(AccountRss accountRss, String refreshToken) {
+    public RefreshTokenRes encode(AccountRss accountRss, String refreshToken) {
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
-        return LoginRes.builder()
+        return RefreshTokenRes.builder()
                 .accessToken(JWT.create()
                         .withSubject(accountRss.getId())
                         .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_AGE))

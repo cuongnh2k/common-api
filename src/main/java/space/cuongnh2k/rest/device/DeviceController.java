@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
 
@@ -22,5 +23,11 @@ public class DeviceController {
     public ResponseEntity<BaseResponseDto> activeAccount(@RequestBody @Valid ActiveDeviceReq req) {
         deviceService.activeDevice(req);
         return BaseResponseDto.success("Active account successful");
+    }
+
+    @Privileges
+    @PostMapping("refresh-token")
+    public ResponseEntity<BaseResponseDto> refreshToken() {
+        return BaseResponseDto.success("Refresh token successful", deviceService.refreshToken());
     }
 }
