@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 
-
 @Service
 @Transactional
 @RequiredArgsConstructor
