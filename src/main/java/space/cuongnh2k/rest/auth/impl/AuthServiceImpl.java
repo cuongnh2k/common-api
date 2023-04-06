@@ -12,7 +12,6 @@ import space.cuongnh2k.core.config.SendEmailUtil;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
-import space.cuongnh2k.core.utils.GenerateUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.GetAccountPrt;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.USER_AGENT;
-
 
 @Service
 @Transactional
