@@ -61,9 +61,10 @@ public class AuthServiceImpl implements AuthService {
                 .userAgent(request.getHeader(USER_AGENT))
                 .build());
         String activationCode = UUID.randomUUID().toString();
-        String deviceId = UUID.randomUUID().toString();
-        LoginRes loginRes = jwtCrypto.encode(listAccountRss.get(0), deviceId);
+        LoginRes loginRes;
         if (CollectionUtils.isEmpty(listDeviceRss)) {
+            String deviceId = UUID.randomUUID().toString();
+            loginRes = jwtCrypto.encode(listAccountRss.get(0), deviceId);
             if (deviceRepository.createDevice(CreateDevicePrt.builder()
                     .id(deviceId)
                     .accountId(listAccountRss.get(0).getId())
@@ -76,6 +77,7 @@ public class AuthServiceImpl implements AuthService {
             }
             sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), deviceId, activationCode);
         } else {
+            loginRes = jwtCrypto.encode(listAccountRss.get(0), listDeviceRss.get(0).getId());
             UpdateDevicePrt prt;
             if (listDeviceRss.get(0).getIsActivated() == IsActivated.YES) {
                 prt = UpdateDevicePrt.builder()

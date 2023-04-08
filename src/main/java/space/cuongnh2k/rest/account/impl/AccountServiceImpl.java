@@ -59,6 +59,7 @@ public class AccountServiceImpl implements AccountService {
         UpdateAccountPrt prt = new UpdateAccountPrt();
         BeanCopyUtil.copyProperties(prt, req);
         prt.setId(authContext.getAccountId());
+        prt.setPassword(passwordEncoder.encode(prt.getPassword()));
         if (accountRepository.updateAccount(prt) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0011);
         }

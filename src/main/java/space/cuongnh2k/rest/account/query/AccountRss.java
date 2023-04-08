@@ -12,4 +12,8 @@ public class AccountRss {
     private String password;
     private String activationCode;
     private IsActivated isActivated;
+    private String firstName;
+    private String lastName;
+    private String avatarFileId;
+    private String avatarUrl;
 }
