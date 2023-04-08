@@ -1,23 +1,19 @@
 package space.cuongnh2k.core.crypto;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.auth.dto.LoginRes;
 import space.cuongnh2k.rest.device.dto.RefreshTokenRes;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import static org.springframework.http.HttpHeaders.USER_AGENT;
 
 @Component
 @RequiredArgsConstructor
@@ -68,21 +64,14 @@ public class JwtCrypto {
                 .build();
     }
 
-    public List<String> decode(TokenTypeEnum type) {
-        List<String> listError = new ArrayList<>();
+    public String decode() {
         try {
-            if (!authContext.getTokenType().equals(type.toString())) {
-                listError.add("Incorrect token type");
-            }
-            if (!authContext.getTokenType().equals(request.getHeader(USER_AGENT))) {
-                listError.add("Incorrect userAgent");
-            }
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(authContext.getBearer());
         } catch (Exception exception) {
-            listError.add(exception.getMessage());
+            return exception.getMessage();
         }
-        if (CollectionUtils.isEmpty(listError)) {
-            return null;
-        }
-        return listError;
+        return null;
     }
 }

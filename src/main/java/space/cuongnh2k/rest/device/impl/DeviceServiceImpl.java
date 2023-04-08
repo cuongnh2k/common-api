@@ -1,8 +1,6 @@
 package space.cuongnh2k.rest.device.impl;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import space.cuongnh2k.core.context.AuthContext;
@@ -28,11 +26,8 @@ import java.util.List;
 public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
     private final AccountRepository accountRepository;
-    private final HttpServletRequest request;
     private final JwtCrypto jwtCrypto;
     private final AuthContext authContext;
-    @Value("${application.jwt.secret-key}")
-    private String SECRET_KEY;
 
     @Override
     public void activeDevice(ActiveDeviceReq req) {
@@ -49,9 +44,9 @@ public class DeviceServiceImpl implements DeviceService {
         try {
             List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
                     .id(authContext.getAccountId()).build());
-            RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer());
+            RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer(), authContext.getDeviceId());
             if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
-                    .id(decodedJWT.getId())
+                    .id(authContext.getDeviceId())
                     .accessToken(refreshTokenRes.getAccessToken())
                     .build()) != 1) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);

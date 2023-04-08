@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Log4j2
@@ -67,24 +68,35 @@ public class FilterConfig extends OncePerRequestFilter {
             if (privilegeAnnotation != null) {
                 authContext.setBearer(request.getHeader(AUTHORIZATION));
                 if (authContext.getBearer() == null) {
-                    listError.add("Token is empty");
+                    listError.add("Token trống");
                 } else {
-                    List<String> resultDecode;
-                    if (request.getRequestURI().contains("/device/refresh-token")) {
-                        resultDecode = jwtCrypto.decode(TokenTypeEnum.REFRESH_TOKEN);
-                    } else {
-                        resultDecode = jwtCrypto.decode(TokenTypeEnum.ACCESS_TOKEN);
+                    String checkToken = jwtCrypto.decode();
+                    if (checkToken != null) {
+                        listError.add(checkToken);
                     }
-                    if (resultDecode != null) {
-                        listError.addAll(resultDecode);
+                    boolean checkTokenType = true;
+                    if (request.getRequestURI().contains("/device/refresh-token")) {
+                        if (!authContext.getTokenType().equals(TokenTypeEnum.REFRESH_TOKEN.toString())) {
+                            checkTokenType = false;
+                        }
+                    } else {
+                        if (!authContext.getTokenType().equals(TokenTypeEnum.ACCESS_TOKEN.toString())) {
+                            checkTokenType = false;
+                        }
+                    }
+                    if (!checkTokenType) {
+                        listError.add("Sai loại token");
                     } else {
                         List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
                                 .id(authContext.getDeviceId())
                                 .build());
                         if (CollectionUtils.isEmpty(listDeviceRss)) {
                             listError.add("Thiết bị đã đăng xuất");
-                        } else if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
+                        }
+                        if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
                             listError.add("Thiết bị chưa được kích hoạt");
+                        } else if (!listDeviceRss.get(0).getUserAgent().equals(request.getHeader(USER_AGENT))) {
+                            listError.add("Token không được sử dụng cho thiết bị này");
                         }
                     }
                 }
