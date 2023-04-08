@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.core.context.AuthContext;
-import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
 import space.cuongnh2k.rest.device.DeviceRepository;
@@ -45,7 +44,6 @@ public class FilterConfig extends OncePerRequestFilter {
     private final ApplicationContext applicationContext;
     private final AuthContext authContext;
     private final MessageSource messageSource;
-    private final JwtCrypto jwtCrypto;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -66,20 +64,29 @@ public class FilterConfig extends OncePerRequestFilter {
         if (handlerMethod != null) {
             Privileges privilegeAnnotation = handlerMethod.getMethodAnnotation(Privileges.class);
             if (privilegeAnnotation != null) {
-                authContext.setBearer(request.getHeader(AUTHORIZATION));
-                if (authContext.getBearer() == null) {
-                    listError.add("Token trống");
+                String verifyToken = authContext.setAuth(request.getHeader(AUTHORIZATION));
+                if (verifyToken != null) {
+                    listError.add(verifyToken);
                 } else {
-                    String checkToken = jwtCrypto.decode();
-                    if (checkToken != null) {
-                        listError.add(checkToken);
-                    }
                     boolean checkTokenType = true;
-                    if (request.getRequestURI().contains("/device/refresh-token")) {
+                    GetDevicePrt devicePrt;
+                    if (request.getRequestURI().contains("/auth/refresh-token")) {
+                        devicePrt = GetDevicePrt.builder()
+                                .id(authContext.getDeviceId())
+                                .accountId(authContext.getAccountId())
+                                .refreshToken(authContext.getBearer())
+                                .userAgent(request.getHeader(USER_AGENT))
+                                .build();
                         if (!authContext.getTokenType().equals(TokenTypeEnum.REFRESH_TOKEN.toString())) {
                             checkTokenType = false;
                         }
                     } else {
+                        devicePrt = GetDevicePrt.builder()
+                                .id(authContext.getDeviceId())
+                                .accountId(authContext.getAccountId())
+                                .accessToken(authContext.getBearer())
+                                .userAgent(request.getHeader(USER_AGENT))
+                                .build();
                         if (!authContext.getTokenType().equals(TokenTypeEnum.ACCESS_TOKEN.toString())) {
                             checkTokenType = false;
                         }
@@ -87,18 +94,14 @@ public class FilterConfig extends OncePerRequestFilter {
                     if (!checkTokenType) {
                         listError.add("Sai loại token");
                     } else {
-                        List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
-                                .id(authContext.getDeviceId())
-                                .build());
+                        List<DeviceRss> listDeviceRss = deviceRepository.getDevice(devicePrt);
                         if (CollectionUtils.isEmpty(listDeviceRss)) {
                             listError.add("Thiết bị đã đăng xuất");
-                        }
-                        if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
+                        } else if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
                             listError.add("Thiết bị chưa được kích hoạt");
-                        } else if (!listDeviceRss.get(0).getUserAgent().equals(request.getHeader(USER_AGENT))) {
-                            listError.add("Token không được sử dụng cho thiết bị này");
                         }
                     }
+
                 }
             }
         }

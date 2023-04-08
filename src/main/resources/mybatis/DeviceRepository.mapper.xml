@@ -10,7 +10,10 @@
             IS_DELETED = 'NO'
             <if test="id != null">AND ID = #{id}</if>
             <if test="accountId != null">AND ACCOUNT_ID = #{accountId}</if>
+            <if test="accessToken != null">AND ACCESS_TOKEN = #{accessToken}</if>
+            <if test="refreshToken != null">AND REFRESH_TOKEN = #{refreshToken}</if>
             <if test="userAgent != null">AND USER_AGENT = #{userAgent}</if>
+            <if test="isActivated != null">AND IS_ACTIVATED = #{isActivated}</if>
         </where>
     </select>
 
@@ -26,11 +29,18 @@
         <set>
             <if test="accessToken != null">ACCESS_TOKEN = #{accessToken},</if>
             <if test="refreshToken != null">REFRESH_TOKEN = #{refreshToken},</if>
+            <if test="activationCodeUseUpdate != null">ACTIVATION_CODE = #{activationCodeUseUpdate},</if>
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
+            <if test="isDeleted != null">IS_DELETED = #{isDeleted},</if>
         </set>
         <where>
             <if test="id != null">ID = #{id}</if>
-            <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
+            <if test="activationCodeUseActive != null">AND ACTIVATION_CODE = #{activationCodeUseActive}</if>
+            <if test="ids != null">
+                <foreach item="item" index="index" collection="ids" open="ID IN (" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
     </update>
 </mapper>

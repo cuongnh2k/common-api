@@ -1,7 +1,6 @@
 package space.cuongnh2k.core.crypto;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -62,16 +61,5 @@ public class JwtCrypto {
                         .sign(algorithm))
                 .refreshToken(refreshToken)
                 .build();
-    }
-
-    public String decode() {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            verifier.verify(authContext.getBearer());
-        } catch (Exception exception) {
-            return exception.getMessage();
-        }
-        return null;
     }
 }
