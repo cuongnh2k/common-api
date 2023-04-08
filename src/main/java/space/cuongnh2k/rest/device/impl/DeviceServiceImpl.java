@@ -1,13 +1,11 @@
 package space.cuongnh2k.rest.device.impl;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
@@ -24,8 +22,6 @@ import space.cuongnh2k.rest.device.query.UpdateDevicePrt;
 
 import java.util.List;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +30,7 @@ public class DeviceServiceImpl implements DeviceService {
     private final AccountRepository accountRepository;
     private final HttpServletRequest request;
     private final JwtCrypto jwtCrypto;
+    private final AuthContext authContext;
     @Value("${application.jwt.secret-key}")
     private String SECRET_KEY;
 
@@ -50,11 +47,9 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public RefreshTokenRes refreshToken() {
         try {
-            String token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
-            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY.getBytes())).build().verify(token);
             List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                    .id(decodedJWT.getSubject()).build());
-            RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), token);
+                    .id(authContext.getAccountId()).build());
+            RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer());
             if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
                     .id(decodedJWT.getId())
                     .accessToken(refreshTokenRes.getAccessToken())

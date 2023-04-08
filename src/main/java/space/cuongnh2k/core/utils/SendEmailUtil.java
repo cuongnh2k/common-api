@@ -1,4 +1,4 @@
-package space.cuongnh2k.core.config;
+package space.cuongnh2k.core.utils;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

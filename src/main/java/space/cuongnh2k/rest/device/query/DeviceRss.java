@@ -8,5 +8,7 @@ import space.cuongnh2k.core.enums.IsActivated;
 @Setter
 public class DeviceRss {
     private String id;
+    private String userAgent;
     private IsActivated isActivated;
+
 }

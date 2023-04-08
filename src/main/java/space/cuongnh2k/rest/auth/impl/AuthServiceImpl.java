@@ -8,7 +8,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import space.cuongnh2k.core.config.SendEmailUtil;
+import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
