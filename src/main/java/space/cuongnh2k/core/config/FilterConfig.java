@@ -1,8 +1,5 @@
 package space.cuongnh2k.core.config;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,6 +20,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
+import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
@@ -44,12 +41,11 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @Component
 @RequiredArgsConstructor
 public class FilterConfig extends OncePerRequestFilter {
+    private final DeviceRepository deviceRepository;
     private final ApplicationContext applicationContext;
+    private final AuthContext authContext;
     private final MessageSource messageSource;
     private final JwtCrypto jwtCrypto;
-    private final DeviceRepository deviceRepository;
-    @Value("${application.jwt.secret-key}")
-    private String SECRET_KEY;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -70,29 +66,37 @@ public class FilterConfig extends OncePerRequestFilter {
         if (handlerMethod != null) {
             Privileges privilegeAnnotation = handlerMethod.getMethodAnnotation(Privileges.class);
             if (privilegeAnnotation != null) {
-                String bearer = request.getHeader(AUTHORIZATION);
-                if (!StringUtils.hasText(bearer)) {
-                    listError.add("Token is empty");
+                authContext.setBearer(request.getHeader(AUTHORIZATION));
+                if (authContext.getBearer() == null) {
+                    listError.add("Token trống");
                 } else {
-                    List<String> resultDecode;
-                    if (request.getRequestURI().contains("/device/refresh-token")) {
-                        resultDecode = jwtCrypto.decode(TokenTypeEnum.REFRESH_TOKEN);
-                    } else {
-                        resultDecode = jwtCrypto.decode(TokenTypeEnum.ACCESS_TOKEN);
+                    String checkToken = jwtCrypto.decode();
+                    if (checkToken != null) {
+                        listError.add(checkToken);
                     }
-                    if (resultDecode != null) {
-                        listError.addAll(resultDecode);
+                    boolean checkTokenType = true;
+                    if (request.getRequestURI().contains("/device/refresh-token")) {
+                        if (!authContext.getTokenType().equals(TokenTypeEnum.REFRESH_TOKEN.toString())) {
+                            checkTokenType = false;
+                        }
                     } else {
-                        String token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
-                        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY.getBytes())).build().verify(token);
+                        if (!authContext.getTokenType().equals(TokenTypeEnum.ACCESS_TOKEN.toString())) {
+                            checkTokenType = false;
+                        }
+                    }
+                    if (!checkTokenType) {
+                        listError.add("Sai loại token");
+                    } else {
                         List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
-                                .accountId(decodedJWT.getSubject())
-                                .userAgent(request.getHeader(USER_AGENT))
+                                .id(authContext.getDeviceId())
                                 .build());
                         if (CollectionUtils.isEmpty(listDeviceRss)) {
                             listError.add("Thiết bị đã đăng xuất");
-                        } else if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
+                        }
+                        if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
                             listError.add("Thiết bị chưa được kích hoạt");
+                        } else if (!listDeviceRss.get(0).getUserAgent().equals(request.getHeader(USER_AGENT))) {
+                            listError.add("Token không được sử dụng cho thiết bị này");
                         }
                     }
                 }

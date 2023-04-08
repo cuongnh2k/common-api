@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class GetDevicePrt {
+    private String id;
     private String accountId;
     private String userAgent;
 }

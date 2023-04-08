@@ -8,7 +8,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import space.cuongnh2k.core.config.SendEmailUtil;
+import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
@@ -57,9 +57,9 @@ public class AuthServiceImpl implements AuthService {
                 .accountId(listAccountRss.get(0).getId())
                 .userAgent(request.getHeader(USER_AGENT))
                 .build());
-        LoginRes loginRes = jwtCrypto.encode(listAccountRss.get(0));
         String activationCode = UUID.randomUUID().toString();
         String deviceId = UUID.randomUUID().toString();
+        LoginRes loginRes = jwtCrypto.encode(listAccountRss.get(0), deviceId);
         if (CollectionUtils.isEmpty(listDeviceRss)) {
             if (deviceRepository.createDevice(CreateDevicePrt.builder()
                     .id(deviceId)

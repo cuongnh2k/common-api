@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import space.cuongnh2k.core.config.SendEmailUtil;
+import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
