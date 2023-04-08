@@ -14,7 +14,9 @@ public enum BusinessLogicEnum {
     BUSINESS_LOGIC_0006(-6, "Thiết bị chưa kích hoạt"),
     BUSINESS_LOGIC_0007(-7, "Kích hoạt tài khoản thất bại"),
     BUSINESS_LOGIC_0008(-8, "Kích hoạt thiết bị thất bại"),
-    BUSINESS_LOGIC_0009(-9, "Làm mới token thất bại");
+    BUSINESS_LOGIC_0009(-9, "Làm mới token thất bại"),
+    BUSINESS_LOGIC_0010(-10, "Đăng xuất thất bại"),
+    BUSINESS_LOGIC_0011(-11, "Cập nhật tài khoản thất bại");
     private final Integer errorCode;
     private final String message;
 }

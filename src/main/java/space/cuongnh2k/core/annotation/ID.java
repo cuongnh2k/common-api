@@ -2,6 +2,7 @@ package space.cuongnh2k.core.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import space.cuongnh2k.core.validations.IDCollectionValidator;
 import space.cuongnh2k.core.validations.IDValidator;
 
 import java.lang.annotation.Documented;
@@ -15,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Repeatable(ID.List.class)
-@Constraint(validatedBy = {IDValidator.class})
+@Constraint(validatedBy = {IDValidator.class, IDCollectionValidator.class})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 public @interface ID {
     String message() default "{space.cuongnh2k.constraints.ID.message}";

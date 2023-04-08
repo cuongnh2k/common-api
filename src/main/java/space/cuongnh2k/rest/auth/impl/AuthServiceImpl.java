@@ -8,11 +8,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import space.cuongnh2k.core.utils.SendEmailUtil;
+import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
+import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.GetAccountPrt;
@@ -20,6 +21,7 @@ import space.cuongnh2k.rest.auth.AuthService;
 import space.cuongnh2k.rest.auth.dto.LoginReq;
 import space.cuongnh2k.rest.auth.dto.LoginRes;
 import space.cuongnh2k.rest.device.DeviceRepository;
+import space.cuongnh2k.rest.device.dto.RefreshTokenRes;
 import space.cuongnh2k.rest.device.query.CreateDevicePrt;
 import space.cuongnh2k.rest.device.query.DeviceRss;
 import space.cuongnh2k.rest.device.query.GetDevicePrt;
@@ -36,6 +38,7 @@ import static org.springframework.http.HttpHeaders.USER_AGENT;
 public class AuthServiceImpl implements AuthService {
     private final AccountRepository accountRepository;
     private final DeviceRepository deviceRepository;
+    private final AuthContext authContext;
     private final DaoAuthenticationProvider daoAuthenticationProvider;
     private final JwtCrypto jwtCrypto;
     private final SendEmailUtil sendEmailUtil;
@@ -58,9 +61,10 @@ public class AuthServiceImpl implements AuthService {
                 .userAgent(request.getHeader(USER_AGENT))
                 .build());
         String activationCode = UUID.randomUUID().toString();
-        String deviceId = UUID.randomUUID().toString();
-        LoginRes loginRes = jwtCrypto.encode(listAccountRss.get(0), deviceId);
+        LoginRes loginRes;
         if (CollectionUtils.isEmpty(listDeviceRss)) {
+            String deviceId = UUID.randomUUID().toString();
+            loginRes = jwtCrypto.encode(listAccountRss.get(0), deviceId);
             if (deviceRepository.createDevice(CreateDevicePrt.builder()
                     .id(deviceId)
                     .accountId(listAccountRss.get(0).getId())
@@ -73,16 +77,47 @@ public class AuthServiceImpl implements AuthService {
             }
             sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), deviceId, activationCode);
         } else {
-            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
-                    .id(listDeviceRss.get(0).getId())
-                    .accessToken(loginRes.getAccessToken())
-                    .refreshToken(loginRes.getRefreshToken())
-                    .activationCode(activationCode)
-                    .build()) != 1) {
+            loginRes = jwtCrypto.encode(listAccountRss.get(0), listDeviceRss.get(0).getId());
+            UpdateDevicePrt prt;
+            if (listDeviceRss.get(0).getIsActivated() == IsActivated.YES) {
+                prt = UpdateDevicePrt.builder()
+                        .id(listDeviceRss.get(0).getId())
+                        .accessToken(loginRes.getAccessToken())
+                        .refreshToken(loginRes.getRefreshToken())
+                        .build();
+            } else {
+                prt = UpdateDevicePrt.builder()
+                        .id(listDeviceRss.get(0).getId())
+                        .accessToken(loginRes.getAccessToken())
+                        .refreshToken(loginRes.getRefreshToken())
+                        .activationCodeUseUpdate(activationCode)
+                        .build();
+            }
+            if (deviceRepository.updateDevice(prt) != 1) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0005);
             }
-            sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), listDeviceRss.get(0).getId(), activationCode);
+            if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
+                sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), listDeviceRss.get(0).getId(), activationCode);
+            }
         }
         return loginRes;
+    }
+
+    @Override
+    public RefreshTokenRes refreshToken() {
+        try {
+            List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                    .id(authContext.getAccountId()).build());
+            RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer(), authContext.getDeviceId());
+            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+                    .id(authContext.getDeviceId())
+                    .accessToken(refreshTokenRes.getAccessToken())
+                    .build()) != 1) {
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
+            }
+            return refreshTokenRes;
+        } catch (Exception e) {
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
+        }
     }
 }

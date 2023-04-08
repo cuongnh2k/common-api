@@ -1,10 +1,14 @@
 package space.cuongnh2k.rest.device;
 
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
-import space.cuongnh2k.rest.device.dto.RefreshTokenRes;
+import space.cuongnh2k.rest.device.dto.DeviceRes;
+
+import java.util.List;
 
 public interface DeviceService {
     void activeDevice(ActiveDeviceReq req);
 
-    RefreshTokenRes refreshToken();
+    void logout(List<String> ids);
+
+    List<DeviceRes> getListDevice();
 }

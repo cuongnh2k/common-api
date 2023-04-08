@@ -2,6 +2,7 @@ package space.cuongnh2k.core.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import space.cuongnh2k.core.validations.UUIDCollectionValidator;
 import space.cuongnh2k.core.validations.UUIDValidator;
 
 import java.lang.annotation.Documented;
@@ -15,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Repeatable(UUID.List.class)
-@Constraint(validatedBy = {UUIDValidator.class})
+@Constraint(validatedBy = {UUIDValidator.class, UUIDCollectionValidator.class})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 public @interface UUID {
     String message() default "{space.cuongnh2k.constraints.UUID.message}";

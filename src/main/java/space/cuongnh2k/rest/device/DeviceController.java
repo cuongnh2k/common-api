@@ -4,13 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import space.cuongnh2k.core.annotation.Privileges;
+import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
+
+import java.util.List;
 
 @Validated
 @RequiredArgsConstructor
@@ -19,15 +19,22 @@ import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
 public class DeviceController {
     private final DeviceService deviceService;
 
-    @PostMapping("/active")
+    @PatchMapping("/active")
     public ResponseEntity<BaseResponseDto> activeAccount(@RequestBody @Valid ActiveDeviceReq req) {
         deviceService.activeDevice(req);
         return BaseResponseDto.success("Active account successful");
     }
 
     @Privileges
-    @PostMapping("refresh-token")
-    public ResponseEntity<BaseResponseDto> refreshToken() {
-        return BaseResponseDto.success("Refresh token successful", deviceService.refreshToken());
+    @DeleteMapping
+    public ResponseEntity<BaseResponseDto> logout(@RequestParam @UUID List<String> ids) {
+        deviceService.logout(ids);
+        return BaseResponseDto.success("Logout successful");
+    }
+
+    @Privileges
+    @GetMapping
+    public ResponseEntity<BaseResponseDto> getListDevice() {
+        return BaseResponseDto.success("Get data successful", deviceService.getListDevice());
     }
 }
