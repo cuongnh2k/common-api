@@ -7,7 +7,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import space.cuongnh2k.core.annotation.Privileges;
+import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.core.enums.AccessTypeEnum;
+import space.cuongnh2k.core.enums.FileTypeEnum;
+
+import java.util.List;
 
 @Validated
 @RestController
@@ -16,11 +22,11 @@ import space.cuongnh2k.core.enums.AccessTypeEnum;
 public class FileController {
     private final FileService fileService;
 
+    @Privileges
     @PostMapping
-    public ResponseEntity<String> upload(@RequestParam AccessTypeEnum access
-//                                         @RequestParam(required = false) MultipartFile[] files,
-    ) {
-//        return new ResponseEntity<>(fileService.uploadFile(files), HttpStatus.OK);
-        return null;
+    public ResponseEntity<BaseResponseDto> upload(@RequestParam(defaultValue = "PRIVATE") AccessTypeEnum access,
+                                                  @RequestParam(defaultValue = "DEFAULT") FileTypeEnum type,
+                                                  @RequestParam List<MultipartFile> files) {
+        return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, type, files));
     }
 }

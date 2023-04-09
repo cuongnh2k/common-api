@@ -1,5 +1,5 @@
 package space.cuongnh2k.core.enums;
 
 public enum ImageFormatEnum {
-    JPEG, PNG, GIF, TIFF, PSD, PDF, EPS, AI, HEIC, RAW, SVG
+    apng, gif, ico, cur, jpg, jpeg, jfif, pjpeg, pjp, png, svg
 }
