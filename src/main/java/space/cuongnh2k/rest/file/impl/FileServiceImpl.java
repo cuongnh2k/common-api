@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.*;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
     private final AmazonS3 amazonS3;
@@ -36,33 +38,17 @@ public class FileServiceImpl implements FileService {
     @Value("${application.bucket-name.private}")
     private String BUCKET_NAME_PRIVATE;
 
-//    @Override
-//    public String uploadFile(MultipartFile[] files) {
-//        try {
-//            ObjectMetadata metadata = new ObjectMetadata();
-//            metadata.setContentLength(file.getSize());
-//            amazonS3.putObject(BUCKET_NAME_PUBLIC, keyName + ".PNG", file.getInputStream(), metadata);
-//            return "File uploaded: " + keyName;
-//        } catch (Exception e) {
-//            log.error(e);
-//        }
-//        return "File not uploaded: " ;
-//    }
+    @Value("${cloud.aws.region.static}")
+    private String BUCKET_REGION;
 
     @Override
     public List<FileRes> uploadFile(AccessTypeEnum access, FileTypeEnum type, List<MultipartFile> files) {
         List<CreateFilePrt> listPrt = new ArrayList<>();
         //valid
         for (MultipartFile file : files) {
-            String fileExtension = null;
-            String originalFilename = null;
-            try {
-                originalFilename = file.getOriginalFilename();
-                fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-            if (fileExtension == null) {
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if (fileExtension.equals("")) {
                 throw new BusinessLogicException();
             }
             switch (type) {
@@ -98,10 +84,20 @@ public class FileServiceImpl implements FileService {
                 default:
                     break;
             }
+            String id = UUID.randomUUID().toString();
             listPrt.add(CreateFilePrt.builder()
-                    .id(UUID.randomUUID().toString())
+                    .id(id)
                     .accountId(authContext.getAccountId())
-                    .url(access == AccessTypeEnum.PUBLIC ? "" : null)
+                    .url(access == AccessTypeEnum.PUBLIC ? "https://s3."
+                            + BUCKET_REGION
+                            + ".amazonaws.com/"
+                            + BUCKET_NAME_PUBLIC
+                            + "/"
+                            + authContext.getAccountId()
+                            + "/"
+                            + id
+                            + "."
+                            + fileExtension.toLowerCase() : null)
                     .name(originalFilename)
                     .fileExtension(fileExtension.toLowerCase())
                     .access(access)
@@ -117,7 +113,10 @@ public class FileServiceImpl implements FileService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(o.getFile().getSize());
             try {
-                amazonS3.putObject(BUCKET_NAME_PUBLIC, ""+o.getId() + "." + o.getFileExtension(), o.getFile().getInputStream(), metadata);
+                amazonS3.putObject(access == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE,
+                        authContext.getAccountId() + "/" + o.getId() + "." + o.getFileExtension(),
+                        o.getFile().getInputStream(),
+                        metadata);
             } catch (IOException e) {
                 throw new BusinessLogicException();
             }

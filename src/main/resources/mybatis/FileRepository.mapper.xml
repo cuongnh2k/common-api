@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="space.cuongnh2k.rest.file.FileRepository">
+
+    <insert id="uploadFile" parameterType="java.util.List">
+        /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
+        INSERT INTO FILE (ID, ACCOUNT_ID, URL, `NAME`, ACCESS, `TYPE`)
+        VALUES
+        <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
+            #{element.id},
+            #{element.accountId},
+            #{element.url},
+            #{element.name},
+            #{element.access},
+            #{element.type}
+        </foreach>
+    </insert>
+
+</mapper>
