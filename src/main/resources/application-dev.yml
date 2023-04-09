@@ -8,12 +8,12 @@ cloud:
     stack:
       auto: false
     credentials:
-      accessKey: AKIA45AF3QVWFNIHGZOF
-      secretKey: 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
+      accessKey: AKIAYVGDULSKVEWXTFGR
+      secretKey: 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
 application:
   bucket-name:
-    public: cuongnh2k-bucket-public
-    private: cuongnh2k-bucket-private
+    public: space.cuongnh2k.s3.bucket.public
+    private: space.cuongnh2k.s3.bucket.private
   email:
     username: cuongnh3@rikkeisoft.com
     password: qzbhybpogwafideq
