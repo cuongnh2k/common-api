@@ -18,6 +18,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import space.cuongnh2k.core.base.BaseResponseDto;
@@ -37,6 +39,8 @@ public class BasicErrorAdvice {
             MissingServletRequestPartException.class,
             NoHandlerFoundException.class,
             AsyncRequestTimeoutException.class,
+            MaxUploadSizeExceededException.class,
+            MultipartException.class
 //            RuntimeException.class
     })
     public ResponseEntity<BaseResponseDto> handleException(Exception ex) {
@@ -71,6 +75,10 @@ public class BasicErrorAdvice {
             status = HttpStatus.NOT_FOUND;
         } else if (ex instanceof AsyncRequestTimeoutException) {
             status = HttpStatus.SERVICE_UNAVAILABLE;
+        } else if (ex instanceof MaxUploadSizeExceededException) {
+            status = HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof MultipartException) {
+            status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }

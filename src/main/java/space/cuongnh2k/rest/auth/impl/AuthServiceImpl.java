@@ -105,19 +105,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RefreshTokenRes refreshToken() {
-        try {
-            List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                    .id(authContext.getAccountId()).build());
-            RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer(), authContext.getDeviceId());
-            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
-                    .id(authContext.getDeviceId())
-                    .accessToken(refreshTokenRes.getAccessToken())
-                    .build()) != 1) {
-                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
-            }
-            return refreshTokenRes;
-        } catch (Exception e) {
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                .id(authContext.getAccountId()).build());
+        RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer(), authContext.getDeviceId());
+        if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+                .id(authContext.getDeviceId())
+                .accessToken(refreshTokenRes.getAccessToken())
+                .build()) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
         }
+        return refreshTokenRes;
     }
 }

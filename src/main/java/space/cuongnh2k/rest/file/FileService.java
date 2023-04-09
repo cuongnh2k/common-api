@@ -1,7 +1,12 @@
 package space.cuongnh2k.rest.file;
 
 import org.springframework.web.multipart.MultipartFile;
+import space.cuongnh2k.core.enums.AccessTypeEnum;
+import space.cuongnh2k.core.enums.FileTypeEnum;
+import space.cuongnh2k.rest.file.dto.FileRes;
+
+import java.util.List;
 
 public interface FileService {
-    String uploadFile(MultipartFile[] file);
+    List<FileRes> uploadFile(AccessTypeEnum access, FileTypeEnum type, List<MultipartFile> files);
 }
