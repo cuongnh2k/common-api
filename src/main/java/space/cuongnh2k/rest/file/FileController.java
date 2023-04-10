@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.core.enums.AccessTypeEnum;
-import space.cuongnh2k.core.enums.FileTypeEnum;
 
 import java.util.List;
 
@@ -25,8 +24,7 @@ public class FileController {
     @Privileges
     @PostMapping
     public ResponseEntity<BaseResponseDto> upload(@RequestParam(defaultValue = "PRIVATE") AccessTypeEnum access,
-                                                  @RequestParam(defaultValue = "DEFAULT") FileTypeEnum type,
                                                   @RequestParam List<MultipartFile> files) {
-        return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, type, files));
+        return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, files));
     }
 }
