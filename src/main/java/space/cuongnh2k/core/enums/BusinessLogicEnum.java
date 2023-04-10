@@ -17,7 +17,10 @@ public enum BusinessLogicEnum {
     BUSINESS_LOGIC_0005(-5, "Device update failed"),
     BUSINESS_LOGIC_0008(-8, "Device activation failed"),
     BUSINESS_LOGIC_0009(-9, "Refresh token failed"),
-    BUSINESS_LOGIC_0010(-10, "Logout failed");
+    BUSINESS_LOGIC_0010(-10, "Logout failed"),
+
+    BUSINESS_LOGIC_0012(-12, "Empty file"),
+    BUSINESS_LOGIC_0013(-13, "File upload failed");
 
     private final Integer errorCode;
     private final String message;

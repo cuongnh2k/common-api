@@ -3,6 +3,7 @@ package space.cuongnh2k.core.context;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ public class AuthContext {
     private String accountId;
     private String tokenType;
     private String deviceId;
+    private AccountContext account;
 
     public String setAuth(String token) {
         try {
@@ -29,8 +31,9 @@ public class AuthContext {
             this.accountId = decodedJWT.getSubject();
             this.tokenType = decodedJWT.getClaim("type").asString();
             this.deviceId = decodedJWT.getClaim("deviceId").asString();
+            this.account = new Gson().fromJson(decodedJWT.getClaim("account").toString(), AccountContext.class);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e);
             return e.getMessage();
         }
         return null;

@@ -1,14 +1,13 @@
 package space.cuongnh2k.rest.file;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.annotation.Privileges;
+import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.core.enums.AccessTypeEnum;
 
@@ -23,8 +22,17 @@ public class FileController {
 
     @Privileges
     @PostMapping
-    public ResponseEntity<BaseResponseDto> upload(@RequestParam(defaultValue = "PRIVATE") AccessTypeEnum access,
-                                                  @RequestParam List<MultipartFile> files) {
+    public ResponseEntity<BaseResponseDto> uploadFile(@RequestParam(defaultValue = "PRIVATE") AccessTypeEnum access,
+                                                      @RequestParam List<MultipartFile> files) {
         return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, files));
+    }
+
+    @Privileges
+    @PostMapping("/delete")
+    public ResponseEntity<BaseResponseDto> deleteFile(@RequestParam AccessTypeEnum access,
+                                                      @RequestParam(defaultValue = "false") Boolean isDeleteAll,
+                                                      @RequestBody @UUID List<String> ids) {
+        fileService.deleteFile(access, isDeleteAll, ids);
+        return BaseResponseDto.success("Deleted file successful");
     }
 }
