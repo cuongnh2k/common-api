@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.context.AuthContext;
-import space.cuongnh2k.core.enums.*;
+import space.cuongnh2k.core.enums.AccessTypeEnum;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.file.FileRepository;
@@ -42,7 +42,7 @@ public class FileServiceImpl implements FileService {
     private String BUCKET_REGION;
 
     @Override
-    public List<FileRes> uploadFile(AccessTypeEnum access, FileTypeEnum type, List<MultipartFile> files) {
+    public List<FileRes> uploadFile(AccessTypeEnum access, List<MultipartFile> files) {
         List<CreateFilePrt> listPrt = new ArrayList<>();
         //valid
         for (MultipartFile file : files) {
@@ -51,57 +51,16 @@ public class FileServiceImpl implements FileService {
             if (fileExtension.equals("")) {
                 throw new BusinessLogicException();
             }
-            switch (type) {
-                case IMAGE:
-                    if (!fileExtension.equalsIgnoreCase(ImageFormatEnum.apng.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.gif.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.ico.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.cur.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.jpg.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.jpeg.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.jfif.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.pjpeg.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.pjp.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.png.toString())
-                            && !fileExtension.equalsIgnoreCase(ImageFormatEnum.svg.toString())) {
-                        throw new BusinessLogicException();
-                    }
-                    break;
-                case AUDIO:
-                    if (!fileExtension.equalsIgnoreCase(AudioFormatEnum.mp3.toString())
-                            && !fileExtension.equalsIgnoreCase(AudioFormatEnum.wav.toString())
-                            && !fileExtension.equalsIgnoreCase(AudioFormatEnum.ogg.toString())) {
-                        throw new BusinessLogicException();
-                    }
-                    break;
-                case VIDEO:
-                    if (!fileExtension.equalsIgnoreCase(VideoFormatEnum.mp4.toString())
-                            && !fileExtension.equalsIgnoreCase(VideoFormatEnum.webm.toString())
-                            && !fileExtension.equalsIgnoreCase(VideoFormatEnum.ogg.toString())) {
-                        throw new BusinessLogicException();
-                    }
-                    break;
-                default:
-                    break;
-            }
             String id = UUID.randomUUID().toString();
             listPrt.add(CreateFilePrt.builder()
                     .id(id)
                     .accountId(authContext.getAccountId())
-                    .url(access == AccessTypeEnum.PUBLIC ? "https://s3."
-                            + BUCKET_REGION
-                            + ".amazonaws.com/"
-                            + BUCKET_NAME_PUBLIC
-                            + "/"
-                            + authContext.getAccountId()
-                            + "/"
-                            + id
-                            + "."
-                            + fileExtension.toLowerCase() : null)
+                    .url(access == AccessTypeEnum.PUBLIC ? "https://s3." + BUCKET_REGION + ".amazonaws.com/" + BUCKET_NAME_PUBLIC + "/" + authContext.getAccountId() + "/" + id + "." + fileExtension.toLowerCase() : null)
                     .name(originalFilename)
-                    .fileExtension(fileExtension.toLowerCase())
+                    .contentType(file.getContentType())
+                    .size(file.getSize())
                     .access(access)
-                    .type(type)
+                    .fileExtension(fileExtension.toLowerCase())
                     .file(file)
                     .build());
         }
@@ -112,6 +71,7 @@ public class FileServiceImpl implements FileService {
         listPrt.forEach(o -> {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(o.getFile().getSize());
+            metadata.setContentType(o.getContentType());
             try {
                 amazonS3.putObject(access == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE,
                         authContext.getAccountId() + "/" + o.getId() + "." + o.getFileExtension(),

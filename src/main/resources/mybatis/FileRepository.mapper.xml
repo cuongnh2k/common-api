@@ -4,15 +4,16 @@
 
     <insert id="uploadFile" parameterType="java.util.List">
         /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
-        INSERT INTO FILE (ID, ACCOUNT_ID, URL, `NAME`, ACCESS, `TYPE`)
+        INSERT INTO FILE (ID, ACCOUNT_ID, URL, `NAME`,CONTENT_TYPE, SIZE, ACCESS)
         VALUES
         <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
             #{element.id},
             #{element.accountId},
             #{element.url},
             #{element.name},
-            #{element.access},
-            #{element.type}
+            #{element.contentType},
+            #{element.size},
+            #{element.access}
         </foreach>
     </insert>
 
