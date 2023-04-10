@@ -2,6 +2,7 @@ package space.cuongnh2k.rest.file.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,12 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.AccessTypeEnum;
+import space.cuongnh2k.core.enums.BusinessLogicEnum;
+import space.cuongnh2k.core.enums.IsDeleted;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.file.FileRepository;
 import space.cuongnh2k.rest.file.FileService;
 import space.cuongnh2k.rest.file.dto.FileRes;
 import space.cuongnh2k.rest.file.query.CreateFilePrt;
+import space.cuongnh2k.rest.file.query.UpdateFilePrt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,9 +51,10 @@ public class FileServiceImpl implements FileService {
         //valid
         for (MultipartFile file : files) {
             String originalFilename = file.getOriginalFilename();
+            assert originalFilename != null;
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
             if (fileExtension.equals("")) {
-                throw new BusinessLogicException();
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0012);
             }
             String id = UUID.randomUUID().toString();
             listPrt.add(CreateFilePrt.builder()
@@ -66,7 +71,7 @@ public class FileServiceImpl implements FileService {
         }
         // insert
         if (fileRepository.uploadFile(listPrt) != listPrt.size()) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0013);
         }
         listPrt.forEach(o -> {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -78,7 +83,8 @@ public class FileServiceImpl implements FileService {
                         o.getFile().getInputStream(),
                         metadata);
             } catch (IOException e) {
-                throw new BusinessLogicException();
+                log.error(e);
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0013);
             }
         });
         return listPrt.stream()
@@ -88,5 +94,44 @@ public class FileServiceImpl implements FileService {
                     return res;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteFile(AccessTypeEnum access, Boolean isDeleteAll, List<String> ids) {
+        String bucketName = access == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE;
+        if (isDeleteAll) {
+            if (fileRepository.updateFile(UpdateFilePrt.builder()
+                    .accountId(authContext.getAccountId())
+                    .isDeleted(IsDeleted.YES)
+                    .build()) == 0) {
+                throw new BusinessLogicException();
+            }
+            try {
+                for (S3ObjectSummary file : amazonS3.listObjects(bucketName, authContext.getAccountId()).getObjectSummaries()) {
+                    amazonS3.deleteObject(bucketName, file.getKey());
+                }
+            } catch (Exception e) {
+                log.error(e);
+                throw new BusinessLogicException();
+            }
+            return;
+        }
+        if (fileRepository.updateFile(UpdateFilePrt.builder()
+                .ids(ids)
+                .accountId(authContext.getAccountId())
+                .isDeleted(IsDeleted.YES)
+                .build()) != ids.size()) {
+            throw new BusinessLogicException();
+        }
+        try {
+            for (S3ObjectSummary file : amazonS3.listObjects(bucketName, authContext.getAccountId()).getObjectSummaries()) {
+                if (ids.contains(file.getKey().substring(file.getKey().lastIndexOf("/") + 1, file.getKey().lastIndexOf(".")))) {
+                    amazonS3.deleteObject(bucketName, file.getKey());
+                }
+            }
+        } catch (Exception e) {
+            log.error(e);
+            throw new BusinessLogicException();
+        }
     }
 }

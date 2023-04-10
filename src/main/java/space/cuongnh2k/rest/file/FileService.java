@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FileService {
     List<FileRes> uploadFile(AccessTypeEnum access, List<MultipartFile> files);
+
+    void deleteFile(AccessTypeEnum access,Boolean isDeleteAll, List<String> ids);
 }

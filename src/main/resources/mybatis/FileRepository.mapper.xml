@@ -2,6 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="space.cuongnh2k.rest.file.FileRepository">
 
+    <select id="getFile" parameterType="space.cuongnh2k.rest.file.query.GetFilePrt"
+            resultType="space.cuongnh2k.rest.file.query.FileRss">
+        /* space.cuongnh2k.rest.file.FileRepository.getFile */
+        SELECT ID, ACCOUNT_ID, URL, NAME, CONTENT_TYPE, SIZE, ACCESS
+        FROM FILE
+        <where>
+            IS_DELETED = 'NO'
+            <if test="id != null">AND ID = #{id}</if>
+            <if test="accountId != null">AND ACCOUNT_ID = #{accountId}</if>
+            <if test="access != null">AND ACCESS = #{access}</if>
+            <if test="ids != null">
+                <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
     <insert id="uploadFile" parameterType="java.util.List">
         /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
         INSERT INTO FILE (ID, ACCOUNT_ID, URL, `NAME`,CONTENT_TYPE, SIZE, ACCESS)
@@ -16,5 +34,21 @@
             #{element.access}
         </foreach>
     </insert>
+
+    <update id="updateFile" parameterType="space.cuongnh2k.rest.file.query.UpdateFilePrt">
+        /* space.cuongnh2k.rest.file.FileRepository.updateFile */
+        UPDATE FILE
+        <set>
+            <if test="isDeleted != null">IS_DELETED = #{isDeleted}</if>
+        </set>
+        <where>
+            <if test="accountId != null">ACCOUNT_ID = #{accountId}</if>
+            <if test="ids != null">
+                <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
 
 </mapper>

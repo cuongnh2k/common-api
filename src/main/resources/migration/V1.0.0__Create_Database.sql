@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS ACCOUNT
 (
     ID              VARCHAR(36)        NOT NULL,
     EMAIL           VARCHAR(255)       NOT NULL,
-    `PASSWORD`      VARCHAR(255)       NOT NULL,
+    PASSWORD        VARCHAR(255)       NOT NULL,
     FIRST_NAME      VARCHAR(50)        NOT NULL,
     LAST_NAME       VARCHAR(50)                 DEFAULT NULL,
     AVATAR_FILE_ID  varchar(36)                 DEFAULT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS FILE
     ID           VARCHAR(36)                NOT NULL,
     ACCOUNT_ID   VARCHAR(36)                NOT NULL,
     URL          VARCHAR(255)                        DEFAULT NULL,
-    `NAME`       VARCHAR(255)               NOT NULL,
+    NAME         VARCHAR(255)               NOT NULL,
     CONTENT_TYPE VARCHAR(255)               NOT NULL DEFAULT 'application/octet-stream',
     SIZE         BIGINT                     NOT NULL,
     ACCESS       ENUM ('PUBLIC', 'PRIVATE') NOT NULL DEFAULT 'PRIVATE',

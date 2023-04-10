@@ -35,6 +35,7 @@
         </set>
         <where>
             <if test="id != null">ID = #{id}</if>
+            <if test="accountId != null">ACCOUNT_ID = #{accountId}</if>
             <if test="activationCodeUseActive != null">AND ACTIVATION_CODE = #{activationCodeUseActive}</if>
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="ID IN (" separator="," close=")">

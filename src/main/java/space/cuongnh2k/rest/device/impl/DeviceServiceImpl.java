@@ -13,7 +13,6 @@ import space.cuongnh2k.rest.device.DeviceRepository;
 import space.cuongnh2k.rest.device.DeviceService;
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
 import space.cuongnh2k.rest.device.dto.DeviceRes;
-import space.cuongnh2k.rest.device.query.DeviceRss;
 import space.cuongnh2k.rest.device.query.GetDevicePrt;
 import space.cuongnh2k.rest.device.query.UpdateDevicePrt;
 
@@ -39,13 +38,19 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public void logout(List<String> ids) {
-        List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
-                .accountId(authContext.getAccountId()).build());
+    public void logout(Boolean isLogoutAll, List<String> ids) {
+        if (isLogoutAll) {
+            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+                    .accountId(authContext.getAccountId())
+                    .isDeleted(IsDeleted.YES)
+                    .build()) == 0) {
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
+            }
+            return;
+        }
         if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
-                .ids(ids.stream()
-                        .filter(o -> listDeviceRss.stream().anyMatch(oo -> oo.getId().equals(o)))
-                        .collect(Collectors.toList()))
+                .ids(ids)
+                .accountId(authContext.getAccountId())
                 .isDeleted(IsDeleted.YES)
                 .build()) != ids.size()) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);

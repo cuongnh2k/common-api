@@ -8,7 +8,7 @@ import java.util.List;
 public interface DeviceService {
     void activeDevice(ActiveDeviceReq req);
 
-    void logout(List<String> ids);
+    void logout(Boolean isLogoutAll,List<String> ids);
 
     List<DeviceRes> getListDevice();
 }

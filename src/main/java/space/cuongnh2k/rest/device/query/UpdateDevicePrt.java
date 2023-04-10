@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateDevicePrt {
     private String id;
+    private String accountId;
     private List<String> ids;
     private String accessToken;
     private String refreshToken;

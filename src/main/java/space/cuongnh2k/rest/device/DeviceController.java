@@ -26,9 +26,10 @@ public class DeviceController {
     }
 
     @Privileges
-    @DeleteMapping
-    public ResponseEntity<BaseResponseDto> logout(@RequestParam @UUID List<String> ids) {
-        deviceService.logout(ids);
+    @PostMapping
+    public ResponseEntity<BaseResponseDto> logout(@RequestParam(defaultValue = "false") Boolean isLogoutAll,
+                                                  @RequestBody @UUID List<String> ids) {
+        deviceService.logout(isLogoutAll, ids);
         return BaseResponseDto.success("Logout successful");
     }
 
