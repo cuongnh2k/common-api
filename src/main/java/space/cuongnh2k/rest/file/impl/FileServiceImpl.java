@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,6 +163,7 @@ public class FileServiceImpl implements FileService {
                 outputStream.write(buffer, 0, len);
             }
             return ResponseEntity.ok()
+                    .header("Content-Type", listFileRss.get(0).getContentType())
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + listFileRss.get(0).getName() + "\"")
                     .body(outputStream.toByteArray());
         } catch (Exception e) {
