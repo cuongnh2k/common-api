@@ -1,6 +1,5 @@
 package space.cuongnh2k.rest.file;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,10 +28,15 @@ public class FileController {
 
     @Privileges
     @PostMapping("/delete")
-    public ResponseEntity<BaseResponseDto> deleteFile(@RequestParam AccessTypeEnum access,
-                                                      @RequestParam(defaultValue = "false") Boolean isDeleteAll,
+    public ResponseEntity<BaseResponseDto> deleteFile(@RequestParam(defaultValue = "false") Boolean isDeleteAll,
                                                       @RequestBody @UUID List<String> ids) {
-        fileService.deleteFile(access, isDeleteAll, ids);
+        fileService.deleteFile(isDeleteAll, ids);
         return BaseResponseDto.success("Deleted file successful");
+    }
+
+    @Privileges
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable @UUID String id) {
+        return fileService.downloadFile(id);
     }
 }
