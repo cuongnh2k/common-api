@@ -1,3 +1,4 @@
+application.max-file-size: 1024
 spring:
   profiles.active: dev
   servlet:

@@ -1,13 +1,17 @@
 package space.cuongnh2k.rest.file.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.AccessTypeEnum;
@@ -19,9 +23,13 @@ import space.cuongnh2k.rest.file.FileRepository;
 import space.cuongnh2k.rest.file.FileService;
 import space.cuongnh2k.rest.file.dto.FileRes;
 import space.cuongnh2k.rest.file.query.CreateFilePrt;
+import space.cuongnh2k.rest.file.query.FileRss;
+import space.cuongnh2k.rest.file.query.GetFilePrt;
 import space.cuongnh2k.rest.file.query.UpdateFilePrt;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +53,9 @@ public class FileServiceImpl implements FileService {
     @Value("${cloud.aws.region.static}")
     private String BUCKET_REGION;
 
+    @Value("${application.max-file-size}")
+    private Integer MAX_FILE_SIZE;
+
     @Override
     public List<FileRes> uploadFile(AccessTypeEnum access, List<MultipartFile> files) {
         List<CreateFilePrt> listPrt = new ArrayList<>();
@@ -61,7 +72,7 @@ public class FileServiceImpl implements FileService {
                     .id(id)
                     .accountId(authContext.getAccountId())
                     .url(access == AccessTypeEnum.PUBLIC ? "https://s3." + BUCKET_REGION + ".amazonaws.com/" + BUCKET_NAME_PUBLIC + "/" + authContext.getAccountId() + "/" + id + "." + fileExtension.toLowerCase() : null)
-                    .name(originalFilename)
+                    .name(originalFilename.toLowerCase())
                     .contentType(file.getContentType())
                     .size(file.getSize())
                     .access(access)
@@ -97,38 +108,62 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void deleteFile(AccessTypeEnum access, Boolean isDeleteAll, List<String> ids) {
-        String bucketName = access == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE;
+    public void deleteFile(Boolean isDeleteAll, List<String> ids) {
+        List<FileRss> listFileRss;
         if (isDeleteAll) {
+            listFileRss = fileRepository.getFile(GetFilePrt.builder().accountId(authContext.getAccountId()).build());
             if (fileRepository.updateFile(UpdateFilePrt.builder()
                     .accountId(authContext.getAccountId())
                     .isDeleted(IsDeleted.YES)
                     .build()) == 0) {
                 throw new BusinessLogicException();
             }
-            try {
-                for (S3ObjectSummary file : amazonS3.listObjects(bucketName, authContext.getAccountId()).getObjectSummaries()) {
-                    amazonS3.deleteObject(bucketName, file.getKey());
-                }
-            } catch (Exception e) {
-                log.error(e);
+        } else {
+            listFileRss = fileRepository.getFile(GetFilePrt.builder().accountId(authContext.getAccountId()).ids(ids).build());
+            if (fileRepository.updateFile(UpdateFilePrt.builder()
+                    .ids(ids)
+                    .accountId(authContext.getAccountId())
+                    .isDeleted(IsDeleted.YES)
+                    .build()) != ids.size()) {
                 throw new BusinessLogicException();
             }
-            return;
         }
-        if (fileRepository.updateFile(UpdateFilePrt.builder()
-                .ids(ids)
+        try {
+            listFileRss.forEach(o ->
+                    amazonS3.deleteObject(o.getAccess() == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE,
+                            authContext.getAccountId() + "/" + o.getId() + o.getName().substring(o.getName().lastIndexOf(".")))
+
+            );
+        } catch (Exception e) {
+            log.error(e);
+            throw new BusinessLogicException();
+        }
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadFile(String id) {
+        List<FileRss> listFileRss = fileRepository.getFile(GetFilePrt.builder()
+                .id(id)
                 .accountId(authContext.getAccountId())
-                .isDeleted(IsDeleted.YES)
-                .build()) != ids.size()) {
+                .build());
+        if (CollectionUtils.isEmpty(listFileRss)) {
             throw new BusinessLogicException();
         }
         try {
-            for (S3ObjectSummary file : amazonS3.listObjects(bucketName, authContext.getAccountId()).getObjectSummaries()) {
-                if (ids.contains(file.getKey().substring(file.getKey().lastIndexOf("/") + 1, file.getKey().lastIndexOf(".")))) {
-                    amazonS3.deleteObject(bucketName, file.getKey());
-                }
+            S3Object s3object = amazonS3.getObject(
+                    new GetObjectRequest(
+                            listFileRss.get(0).getAccess() == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE,
+                            authContext.getAccountId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
+            InputStream is = s3object.getObjectContent();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[MAX_FILE_SIZE * 1024 * 1024];
+            while ((len = is.read(buffer, 0, buffer.length)) != -1) {
+                outputStream.write(buffer, 0, len);
             }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + listFileRss.get(0).getName() + "\"")
+                    .body(outputStream.toByteArray());
         } catch (Exception e) {
             log.error(e);
             throw new BusinessLogicException();
