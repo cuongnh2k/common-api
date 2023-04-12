@@ -34,7 +34,6 @@ public class FileController {
         return BaseResponseDto.success("Deleted file successful");
     }
 
-    @Privileges
     @GetMapping(value = "/{id}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable @UUID String id) {
         return fileService.downloadFile(id);

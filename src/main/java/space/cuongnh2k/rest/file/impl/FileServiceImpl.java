@@ -145,7 +145,6 @@ public class FileServiceImpl implements FileService {
     public ResponseEntity<byte[]> downloadFile(String id) {
         List<FileRss> listFileRss = fileRepository.getFile(GetFilePrt.builder()
                 .id(id)
-                .accountId(authContext.getAccountId())
                 .build());
         if (CollectionUtils.isEmpty(listFileRss)) {
             throw new BusinessLogicException();
@@ -154,7 +153,7 @@ public class FileServiceImpl implements FileService {
             S3Object s3object = amazonS3.getObject(
                     new GetObjectRequest(
                             listFileRss.get(0).getAccess() == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE,
-                            authContext.getAccountId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
+                            listFileRss.get(0).getAccountId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
             InputStream is = s3object.getObjectContent();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             int len;
