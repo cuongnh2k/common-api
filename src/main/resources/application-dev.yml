@@ -1,6 +1,11 @@
 server:
   port: 9999
   servlet.context-path: /
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:cuongnh2k.space/certificate.p12
+    key-store-password: 8bf53b11-7b98-4052-a7ae-b5ce786556d0
+    enabled: true
 cloud:
   aws:
     region:
