@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class FileRss {
     private String id;
-    private String accountId;
+    private String createdBy;
     private String url;
     private String name;
     private String contentType;

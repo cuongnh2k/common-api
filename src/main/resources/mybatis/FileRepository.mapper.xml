@@ -5,12 +5,12 @@
     <select id="getFile" parameterType="space.cuongnh2k.rest.file.query.GetFilePrt"
             resultType="space.cuongnh2k.rest.file.query.FileRss">
         /* space.cuongnh2k.rest.file.FileRepository.getFile */
-        SELECT ID, ACCOUNT_ID, URL, NAME, CONTENT_TYPE, SIZE, ACCESS
+        SELECT ID, CREATED_BY, URL, NAME, CONTENT_TYPE, SIZE, ACCESS
         FROM FILE
         <where>
             IS_DELETED = 'NO'
             <if test="id != null">AND ID = #{id}</if>
-            <if test="accountId != null">AND ACCOUNT_ID = #{accountId}</if>
+            <if test="createdBy != null">AND CREATED_BY = #{createdBy}</if>
             <if test="access != null">AND ACCESS = #{access}</if>
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
@@ -22,11 +22,11 @@
 
     <insert id="uploadFile" parameterType="java.util.List">
         /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
-        INSERT INTO FILE (ID, ACCOUNT_ID, URL, `NAME`,CONTENT_TYPE, SIZE, ACCESS)
+        INSERT INTO FILE (ID, CREATED_BY, URL, `NAME`,CONTENT_TYPE, SIZE, ACCESS)
         VALUES
         <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
             #{element.id},
-            #{element.accountId},
+            #{element.createdBy},
             #{element.url},
             #{element.name},
             #{element.contentType},
@@ -42,7 +42,7 @@
             <if test="isDeleted != null">IS_DELETED = #{isDeleted}</if>
         </set>
         <where>
-            <if test="accountId != null">ACCOUNT_ID = #{accountId}</if>
+            <if test="createdBy != null">CREATED_BY = #{createdBy}</if>
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
                     #{item}

@@ -13,6 +13,6 @@ import java.util.List;
 public class GetFilePrt {
     private String id;
     private List<String> ids;
-    private String accountId;
+    private String createdBy;
     private AccessTypeEnum access;
 }

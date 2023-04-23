@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +70,7 @@ public class FileServiceImpl implements FileService {
             String id = UUID.randomUUID().toString();
             listPrt.add(CreateFilePrt.builder()
                     .id(id)
-                    .accountId(authContext.getAccountId())
+                    .createdBy(authContext.getAccountId())
                     .url(access == AccessTypeEnum.PUBLIC ? "https://s3." + BUCKET_REGION + ".amazonaws.com/" + BUCKET_NAME_PUBLIC + "/" + authContext.getAccountId() + "/" + id + "." + fileExtension.toLowerCase() : null)
                     .name(originalFilename.toLowerCase())
                     .contentType(file.getContentType())
@@ -112,18 +111,18 @@ public class FileServiceImpl implements FileService {
     public void deleteFile(Boolean isDeleteAll, List<String> ids) {
         List<FileRss> listFileRss;
         if (isDeleteAll) {
-            listFileRss = fileRepository.getFile(GetFilePrt.builder().accountId(authContext.getAccountId()).build());
+            listFileRss = fileRepository.getFile(GetFilePrt.builder().createdBy(authContext.getAccountId()).build());
             if (fileRepository.updateFile(UpdateFilePrt.builder()
-                    .accountId(authContext.getAccountId())
+                    .createdBy(authContext.getAccountId())
                     .isDeleted(IsDeleted.YES)
                     .build()) == 0) {
                 throw new BusinessLogicException();
             }
         } else {
-            listFileRss = fileRepository.getFile(GetFilePrt.builder().accountId(authContext.getAccountId()).ids(ids).build());
+            listFileRss = fileRepository.getFile(GetFilePrt.builder().createdBy(authContext.getAccountId()).ids(ids).build());
             if (fileRepository.updateFile(UpdateFilePrt.builder()
                     .ids(ids)
-                    .accountId(authContext.getAccountId())
+                    .createdBy(authContext.getAccountId())
                     .isDeleted(IsDeleted.YES)
                     .build()) != ids.size()) {
                 throw new BusinessLogicException();
@@ -153,7 +152,7 @@ public class FileServiceImpl implements FileService {
             S3Object s3object = amazonS3.getObject(
                     new GetObjectRequest(
                             listFileRss.get(0).getAccess() == AccessTypeEnum.PUBLIC ? BUCKET_NAME_PUBLIC : BUCKET_NAME_PRIVATE,
-                            listFileRss.get(0).getAccountId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
+                            listFileRss.get(0).getCreatedBy() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
             InputStream is = s3object.getObjectContent();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             int len;

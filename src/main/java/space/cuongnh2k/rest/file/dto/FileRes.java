@@ -8,7 +8,7 @@ import space.cuongnh2k.core.enums.AccessTypeEnum;
 @Setter
 public class FileRes {
     private String id;
-    private String accountId;
+    private String createdBy;
     private String url;
     private String name;
     private String contentType;
