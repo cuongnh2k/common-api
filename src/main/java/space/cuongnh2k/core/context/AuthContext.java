@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import space.cuongnh2k.core.enums.TokenTypeEnum;
 
 @Log4j2
 @Getter
@@ -31,7 +32,9 @@ public class AuthContext {
             this.accountId = decodedJWT.getSubject();
             this.tokenType = decodedJWT.getClaim("type").asString();
             this.deviceId = decodedJWT.getClaim("deviceId").asString();
-            this.account = new Gson().fromJson(decodedJWT.getClaim("account").toString(), AccountContext.class);
+            if (TokenTypeEnum.ACCESS_TOKEN.name().equals(this.tokenType)) {
+                this.account = new Gson().fromJson(decodedJWT.getClaim("account").toString(), AccountContext.class);
+            }
         } catch (Exception e) {
             log.error(e);
             return e.getMessage();

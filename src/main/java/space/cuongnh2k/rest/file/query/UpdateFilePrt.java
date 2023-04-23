@@ -12,6 +12,6 @@ import java.util.List;
 @Builder
 public class UpdateFilePrt {
     private List<String> ids;
-    private String createdBy;
+    private String ownerId;
     private IsDeleted isDeleted;
 }

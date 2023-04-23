@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.TokenTypeEnum;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.account.dto.AccountRes;
@@ -22,7 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtCrypto {
     private final HttpServletRequest request;
-    private final AuthContext authContext;
 
     @Value("${application.jwt.secret-key}")
     private String SECRET_KEY;

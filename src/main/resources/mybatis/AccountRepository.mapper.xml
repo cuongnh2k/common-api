@@ -36,6 +36,7 @@
         <where>
             <if test="id != null">ID = #{id}</if>
             <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
+            <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
         </where>
     </update>
 </mapper>

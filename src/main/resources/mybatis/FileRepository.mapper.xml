@@ -5,13 +5,12 @@
     <select id="getFile" parameterType="space.cuongnh2k.rest.file.query.GetFilePrt"
             resultType="space.cuongnh2k.rest.file.query.FileRss">
         /* space.cuongnh2k.rest.file.FileRepository.getFile */
-        SELECT ID, CREATED_BY, URL, NAME, CONTENT_TYPE, SIZE, ACCESS
+        SELECT ID, OWNER_ID, NAME, CONTENT_TYPE, SIZE
         FROM FILE
         <where>
             IS_DELETED = 'NO'
             <if test="id != null">AND ID = #{id}</if>
-            <if test="createdBy != null">AND CREATED_BY = #{createdBy}</if>
-            <if test="access != null">AND ACCESS = #{access}</if>
+            <if test="ownerId != null">AND OWNER_ID = #{ownerId}</if>
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
                     #{item}
@@ -22,16 +21,14 @@
 
     <insert id="uploadFile" parameterType="java.util.List">
         /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
-        INSERT INTO FILE (ID, CREATED_BY, URL, `NAME`,CONTENT_TYPE, SIZE, ACCESS)
+        INSERT INTO FILE (ID, OWNER_ID, NAME, CONTENT_TYPE, SIZE)
         VALUES
         <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
             #{element.id},
-            #{element.createdBy},
-            #{element.url},
+            #{element.ownerId},
             #{element.name},
             #{element.contentType},
-            #{element.size},
-            #{element.access}
+            #{element.size}
         </foreach>
     </insert>
 
@@ -42,12 +39,13 @@
             <if test="isDeleted != null">IS_DELETED = #{isDeleted}</if>
         </set>
         <where>
-            <if test="createdBy != null">CREATED_BY = #{createdBy}</if>
+            <if test="ownerId != null">OWNER_ID = #{ownerId}</if>
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
+            <if test="isDeleted != null">AND IS_DELETED = 'NO'</if>
         </where>
     </update>
 
