@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS ACCOUNT
 (
     ID              VARCHAR(36)        NOT NULL,
-    EMAIL           VARCHAR(50)       NOT NULL,
+    EMAIL           VARCHAR(50)        NOT NULL,
     PASSWORD        VARCHAR(255)       NOT NULL,
     FIRST_NAME      VARCHAR(50)        NOT NULL,
-    LAST_NAME       VARCHAR(50)                 DEFAULT NULL,
+    LAST_NAME       VARCHAR(50)        NOT NULL,
     AVATAR_FILE_ID  varchar(36)                 DEFAULT NULL,
     ACTIVATION_CODE VARCHAR(36)        NOT NULL,
     IS_ACTIVATED    ENUM ('YES', 'NO') NOT NULL DEFAULT 'NO',
