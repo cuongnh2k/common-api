@@ -70,7 +70,9 @@ public class AuthServiceImpl implements AuthService {
                     .accountId(listAccountRss.get(0).getId())
                     .accessToken(loginRes.getAccessToken())
                     .refreshToken(loginRes.getRefreshToken())
-                    .userAgent(request.getHeader(USER_AGENT))
+                    .userAgent(request.getHeader(USER_AGENT).length() > 255
+                            ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
+                            : request.getHeader(USER_AGENT))
                     .activationCode(activationCode)
                     .build()) != 1) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);

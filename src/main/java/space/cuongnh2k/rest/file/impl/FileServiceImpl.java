@@ -64,7 +64,9 @@ public class FileServiceImpl implements FileService {
             listPrt.add(CreateFilePrt.builder()
                     .id(id)
                     .ownerId(authContext.getAccountId())
-                    .name(originalFilename.toLowerCase())
+                    .name(originalFilename.length() > 255
+                            ? originalFilename.toLowerCase().substring(originalFilename.length() - 255)
+                            : originalFilename.toLowerCase())
                     .contentType(file.getContentType())
                     .size(file.getSize())
                     .fileExtension(fileExtension.toLowerCase())
