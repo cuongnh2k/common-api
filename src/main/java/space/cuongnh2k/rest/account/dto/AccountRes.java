@@ -13,5 +13,4 @@ public class AccountRes {
     private String firstName;
     private String lastName;
     private String avatarFileId;
-    private String avatarUrl;
 }
