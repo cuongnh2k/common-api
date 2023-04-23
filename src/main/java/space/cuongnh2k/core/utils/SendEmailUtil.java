@@ -30,7 +30,7 @@ public class SendEmailUtil {
                     "</head>\n" +
                     "<body>\n" +
                     "<div style=\"margin: 100px auto; width: 100px;\">\n" +
-                    "    <a href=\"https://www.cuongnh2k.space/activate?cid=" + cid + "&code=" + code + "\">\n" +
+                    "    <a href=\"https://cuongnh2k.space/activate?cid=" + cid + "&code=" + code + "\">\n" +
                     "        <button style=\" height: 50px;\n" +
                     "                        width: 100px;\n" +
                     "                        color: white;\n" +
@@ -69,7 +69,7 @@ public class SendEmailUtil {
                     "</head>\n" +
                     "<body>\n" +
                     "<div style=\"margin: 100px auto; width: 100px;\">\n" +
-                    "    <a href=\"https://www.cuongnh2k.space/activate?deviceId=" + deviceId + "&code=" + code + "\">\n" +
+                    "    <a href=\"https://cuongnh2k.space/activate?deviceId=" + deviceId + "&code=" + code + "\">\n" +
                     "        <button style=\" height: 50px;\n" +
                     "                        width: 100px;\n" +
                     "                        color: white;\n" +

@@ -4,7 +4,7 @@
     <select id="getAccount" parameterType="space.cuongnh2k.rest.account.query.GetAccountPrt"
             resultType="space.cuongnh2k.rest.account.query.AccountRss">
         /* space.cuongnh2k.rest.account.AccountRepository.getAccount */
-        SELECT ID, EMAIL, PASSWORD, ACTIVATION_CODE, IS_ACTIVATED, FIRST_NAME, LAST_NAME, AVATAR_FILE_ID, AVATAR_URL
+        SELECT ID, EMAIL, PASSWORD, ACTIVATION_CODE, IS_ACTIVATED, FIRST_NAME, LAST_NAME, AVATAR_FILE_ID
         FROM ACCOUNT
         <where>
             IS_DELETED = 'NO'
@@ -31,12 +31,12 @@
             <if test="firstName != null">FIRST_NAME = #{firstName},</if>
             <if test="lastName != null">LAST_NAME = #{lastName},</if>
             <if test="avatarFileId != null">AVATAR_FILE_ID = #{avatarFileId},</if>
-            <if test="avatarUrl != null">AVATAR_URL = #{avatarUrl},</if>
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
         </set>
         <where>
             <if test="id != null">ID = #{id}</if>
             <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
+            <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
         </where>
     </update>
 </mapper>

@@ -22,7 +22,4 @@ public class UpdateAccountReq {
 
     @Length(36)
     private String avatarFileId;
-
-    @MaxLength(value = 255)
-    private String avatarUrl;
 }

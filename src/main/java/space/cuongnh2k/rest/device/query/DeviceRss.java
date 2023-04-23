@@ -14,6 +14,6 @@ public class DeviceRss {
     private String id;
     private String userAgent;
     private IsActivated isActivated;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
 }

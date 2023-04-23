@@ -8,8 +8,8 @@
         ID,
         USER_AGENT,
         IS_ACTIVATED,
-        CREATED_AT,
-        UPDATED_AT
+        CREATED_DATE,
+        UPDATED_DATE
         FROM DEVICE
         <where>
             IS_DELETED = 'NO'
@@ -40,13 +40,14 @@
         </set>
         <where>
             <if test="id != null">ID = #{id}</if>
-            <if test="accountId != null">ACCOUNT_ID = #{accountId}</if>
+            <if test="accountId != null">AND ACCOUNT_ID = #{accountId}</if>
             <if test="activationCodeUseActive != null">AND ACTIVATION_CODE = #{activationCodeUseActive}</if>
             <if test="ids != null">
-                <foreach item="item" index="index" collection="ids" open="ID IN (" separator="," close=")">
+                <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
+            <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
         </where>
     </update>
 </mapper>

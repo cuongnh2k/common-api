@@ -14,6 +14,7 @@ import space.cuongnh2k.core.annotation.Required;
 public class CreateAccountReq {
     @Email
     @Required
+    @MaxLength(value = 50)
     private String email;
 
     @Required
@@ -24,6 +25,7 @@ public class CreateAccountReq {
     @MaxLength(value = 50)
     private String firstName;
 
+    @Required
     @MaxLength(value = 50)
     private String lastName;
 }
