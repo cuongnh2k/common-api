@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -19,8 +19,8 @@ public abstract class BaseProduceDto<ID> {
     private ID id;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Date createdDate;
+    private Timestamp createdAt;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Date updatedDate;
+    private Timestamp updatedAt;
 }
