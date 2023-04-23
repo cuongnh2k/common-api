@@ -8,8 +8,8 @@
         ID,
         USER_AGENT,
         IS_ACTIVATED,
-        CREATED_AT,
-        UPDATED_AT
+        CREATED_DATE,
+        UPDATED_DATE
         FROM DEVICE
         <where>
             IS_DELETED = 'NO'
