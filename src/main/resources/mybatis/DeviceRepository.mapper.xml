@@ -63,7 +63,7 @@
         </set>
         <where>
             IS_DELETED = 'NO'
-            AND IS_ACTIVATED = 'NO'
+            AND IS_ACTIVATED = 'YES'
             AND ACCOUNT_ID = #{accountId}
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
