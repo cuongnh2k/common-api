@@ -51,7 +51,9 @@ public class AuthServiceImpl implements AuthService {
         } catch (BadCredentialsException e) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
-        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder().email(req.getEmail()).build());
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                .email(req.getEmail())
+                .build());
         if (listAccountRss.get(0).getIsActivated() == IsActivated.NO) {
             sendEmailUtil.activateAccount(listAccountRss.get(0).getEmail(), listAccountRss.get(0).getId(), listAccountRss.get(0).getActivationCode());
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0006);
@@ -108,7 +110,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public RefreshTokenRes refreshToken() {
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                .id(authContext.getAccountId()).build());
+                .id(authContext.getAccountId())
+                .build());
         RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer(), authContext.getDeviceId());
         if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
                 .id(authContext.getDeviceId())
