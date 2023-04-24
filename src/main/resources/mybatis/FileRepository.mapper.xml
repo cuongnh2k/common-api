@@ -5,7 +5,12 @@
     <select id="getFile" parameterType="space.cuongnh2k.rest.file.query.GetFilePrt"
             resultType="space.cuongnh2k.rest.file.query.FileRss">
         /* space.cuongnh2k.rest.file.FileRepository.getFile */
-        SELECT ID, OWNER_ID, NAME, CONTENT_TYPE, SIZE
+        SELECT
+        ID,
+        OWNER_ID,
+        NAME,
+        CONTENT_TYPE,
+        SIZE
         FROM FILE
         <where>
             IS_DELETED = 'NO'
@@ -21,7 +26,11 @@
 
     <insert id="uploadFile" parameterType="java.util.List">
         /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
-        INSERT INTO FILE (ID, OWNER_ID, NAME, CONTENT_TYPE, SIZE)
+        INSERT INTO FILE (ID,
+        OWNER_ID,
+        NAME,
+        CONTENT_TYPE,
+        SIZE)
         VALUES
         <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
             #{element.id},
@@ -32,20 +41,20 @@
         </foreach>
     </insert>
 
-    <update id="updateFile" parameterType="space.cuongnh2k.rest.file.query.UpdateFilePrt">
-        /* space.cuongnh2k.rest.file.FileRepository.updateFile */
+    <update id="deleteFile" parameterType="space.cuongnh2k.rest.file.query.DeleteFilePrt">
+        /* space.cuongnh2k.rest.file.FileRepository.deleteFile */
         UPDATE FILE
         <set>
-            <if test="isDeleted != null">IS_DELETED = #{isDeleted}</if>
+            IS_DELETED = 'YES'
         </set>
         <where>
-            <if test="ownerId != null">OWNER_ID = #{ownerId}</if>
+            IS_DELETED = 'NO'
+            <if test="ownerId != null">AND OWNER_ID = #{ownerId}</if>
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-            <if test="isDeleted != null">AND IS_DELETED = 'NO'</if>
         </where>
     </update>
 

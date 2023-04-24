@@ -4,7 +4,15 @@
     <select id="getAccount" parameterType="space.cuongnh2k.rest.account.query.GetAccountPrt"
             resultType="space.cuongnh2k.rest.account.query.AccountRss">
         /* space.cuongnh2k.rest.account.AccountRepository.getAccount */
-        SELECT ID, EMAIL, PASSWORD, ACTIVATION_CODE, IS_ACTIVATED, FIRST_NAME, LAST_NAME, AVATAR_FILE_ID
+        SELECT
+        ID,
+        EMAIL,
+        PASSWORD,
+        ACTIVATION_CODE,
+        IS_ACTIVATED,
+        FIRST_NAME,
+        LAST_NAME,
+        AVATAR_FILE_ID
         FROM ACCOUNT
         <where>
             IS_DELETED = 'NO'
@@ -19,8 +27,18 @@
 
     <insert id="createAccount" parameterType="space.cuongnh2k.rest.account.query.CreateAccountPrt">
         /* space.cuongnh2k.rest.account.AccountRepository.createAccount */
-        INSERT INTO ACCOUNT (ID, EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, ACTIVATION_CODE)
-        VALUES (#{id}, #{email}, #{password}, #{firstName}, #{lastName}, #{activationCode});
+        INSERT INTO ACCOUNT (ID,
+                             EMAIL,
+                             PASSWORD,
+                             FIRST_NAME,
+                             LAST_NAME,
+                             ACTIVATION_CODE)
+        VALUES (#{id},
+                #{email},
+                #{password},
+                #{firstName},
+                #{lastName},
+                #{activationCode})
     </insert>
 
     <update id="updateAccount" parameterType="space.cuongnh2k.rest.account.query.UpdateAccountPrt">
@@ -34,9 +52,13 @@
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
         </set>
         <where>
-            <if test="id != null">ID = #{id}</if>
+            IS_DELETED = 'NO'
+            <if test="id != null">AND ID = #{id}</if>
             <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
             <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
+            <if test="password != null or firstName != null or lastName != null or avatarFileId != null">
+                AND IS_ACTIVATED = 'YES'
+            </if>
         </where>
     </update>
 </mapper>

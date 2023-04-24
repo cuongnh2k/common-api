@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 import space.cuongnh2k.rest.device.DeviceRepository;
-import space.cuongnh2k.rest.device.query.CreateDevicePrt;
-import space.cuongnh2k.rest.device.query.DeviceRss;
-import space.cuongnh2k.rest.device.query.GetDevicePrt;
-import space.cuongnh2k.rest.device.query.UpdateDevicePrt;
+import space.cuongnh2k.rest.device.query.*;
 
 import java.util.List;
 
@@ -29,5 +26,10 @@ public class DeviceRepositoryImpl implements DeviceRepository {
     @Override
     public int updateDevice(UpdateDevicePrt prt) {
         return sqlSession.update("space.cuongnh2k.rest.device.DeviceRepository.updateDevice", prt);
+    }
+
+    @Override
+    public int deleteDevice(DeleteDevicePrt prt) {
+        return sqlSession.update("space.cuongnh2k.rest.device.DeviceRepository.deleteDevice",prt);
     }
 }

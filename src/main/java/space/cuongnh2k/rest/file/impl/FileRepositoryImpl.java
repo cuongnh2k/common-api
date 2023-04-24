@@ -7,7 +7,7 @@ import space.cuongnh2k.rest.file.FileRepository;
 import space.cuongnh2k.rest.file.query.CreateFilePrt;
 import space.cuongnh2k.rest.file.query.FileRss;
 import space.cuongnh2k.rest.file.query.GetFilePrt;
-import space.cuongnh2k.rest.file.query.UpdateFilePrt;
+import space.cuongnh2k.rest.file.query.DeleteFilePrt;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public int updateFile(UpdateFilePrt prt) {
-        return sqlSession.update("space.cuongnh2k.rest.file.FileRepository.updateFile", prt);
+    public int deleteFile(DeleteFilePrt prt) {
+        return sqlSession.update("space.cuongnh2k.rest.file.FileRepository.deleteFile", prt);
     }
 }

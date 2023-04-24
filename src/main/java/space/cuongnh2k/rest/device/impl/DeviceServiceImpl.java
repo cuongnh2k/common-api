@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
-import space.cuongnh2k.core.enums.IsDeleted;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.device.DeviceRepository;
 import space.cuongnh2k.rest.device.DeviceService;
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
 import space.cuongnh2k.rest.device.dto.DeviceRes;
+import space.cuongnh2k.rest.device.query.DeleteDevicePrt;
 import space.cuongnh2k.rest.device.query.GetDevicePrt;
 import space.cuongnh2k.rest.device.query.UpdateDevicePrt;
 
@@ -31,7 +31,7 @@ public class DeviceServiceImpl implements DeviceService {
         UpdateDevicePrt prt = new UpdateDevicePrt();
         BeanCopyUtil.copyProperties(prt, req);
         prt.setIsActivated(IsActivated.YES);
-        prt.setActivationCodeUseActive(req.getActivationCode());
+        prt.setActivationCode(req.getActivationCode());
         if (deviceRepository.updateDevice(prt) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0008);
         }
@@ -40,18 +40,16 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void logout(Boolean isLogoutAll, List<String> ids) {
         if (isLogoutAll) {
-            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+            if (deviceRepository.deleteDevice(DeleteDevicePrt.builder()
                     .accountId(authContext.getAccountId())
-                    .isDeleted(IsDeleted.YES)
                     .build()) == 0) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
             }
             return;
         }
-        if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+        if (deviceRepository.deleteDevice(DeleteDevicePrt.builder()
                 .ids(ids)
                 .accountId(authContext.getAccountId())
-                .isDeleted(IsDeleted.YES)
                 .build()) != ids.size()) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
         }
