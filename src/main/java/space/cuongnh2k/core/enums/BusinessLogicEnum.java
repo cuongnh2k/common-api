@@ -20,7 +20,10 @@ public enum BusinessLogicEnum {
     BUSINESS_LOGIC_0010(-10, "Logout failed"),
 
     BUSINESS_LOGIC_0012(-12, "Empty file"),
-    BUSINESS_LOGIC_0013(-13, "File upload failed");
+    BUSINESS_LOGIC_0013(-13, "File upload failed"),
+    BUSINESS_LOGIC_0014(-14, "File deletion failed"),
+    BUSINESS_LOGIC_0015(-15, "File does not exist"),
+    BUSINESS_LOGIC_0016(-16, "File download failed");
 
     private final Integer errorCode;
     private final String message;

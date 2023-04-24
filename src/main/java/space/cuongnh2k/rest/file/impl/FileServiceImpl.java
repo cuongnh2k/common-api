@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,7 @@ import space.cuongnh2k.rest.file.query.DeleteFilePrt;
 import space.cuongnh2k.rest.file.query.FileRss;
 import space.cuongnh2k.rest.file.query.GetFilePrt;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -109,7 +108,7 @@ public class FileServiceImpl implements FileService {
                 .ids(ids)
                 .ownerId(authContext.getAccountId())
                 .build()) != ids.size()) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0014);
         }
         try {
             listFileRss.forEach(o ->
@@ -119,7 +118,7 @@ public class FileServiceImpl implements FileService {
             );
         } catch (Exception e) {
             log.error(e);
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0014);
         }
     }
 
@@ -129,26 +128,19 @@ public class FileServiceImpl implements FileService {
                 .id(id)
                 .build());
         if (CollectionUtils.isEmpty(listFileRss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
         }
         try {
             S3Object s3object = amazonS3.getObject(
                     new GetObjectRequest(BUCKET_NAME_PRIVATE,
                             listFileRss.get(0).getOwnerId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
-            InputStream is = s3object.getObjectContent();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            int len;
-            byte[] buffer = new byte[MAX_FILE_SIZE * 1024 * 1024];
-            while ((len = is.read(buffer, 0, buffer.length)) != -1) {
-                outputStream.write(buffer, 0, len);
-            }
             return ResponseEntity.ok()
                     .header("Content-Type", listFileRss.get(0).getContentType())
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + listFileRss.get(0).getName() + "\"")
-                    .body(outputStream.toByteArray());
+                    .body(new InputStreamResource(s3object.getObjectContent()).getContentAsByteArray());
         } catch (Exception e) {
             log.error(e);
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0016);
         }
     }
 }

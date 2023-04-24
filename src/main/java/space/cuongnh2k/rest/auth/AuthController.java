@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @Privileges
-    @PostMapping("/check")
+    @GetMapping("/check")
     public ResponseEntity<BaseResponseDto> check() {
         return BaseResponseDto.success(authContext.getAccount());
     }
