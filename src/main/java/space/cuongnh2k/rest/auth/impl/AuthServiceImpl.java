@@ -94,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
                         .id(listDeviceRss.get(0).getId())
                         .accessToken(loginRes.getAccessToken())
                         .refreshToken(loginRes.getRefreshToken())
-                        .activationCodeUseUpdate(activationCode)
+                        .activationCodeUpdate(activationCode)
                         .build();
             }
             if (deviceRepository.updateDevice(prt) != 1) {

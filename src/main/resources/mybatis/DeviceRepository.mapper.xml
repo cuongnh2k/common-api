@@ -24,8 +24,18 @@
 
     <insert id="createDevice" parameterType="space.cuongnh2k.rest.device.query.CreateDevicePrt">
         /* space.cuongnh2k.rest.device.DeviceRepository.createDevice */
-        INSERT INTO DEVICE (ID, ACCOUNT_ID, ACCESS_TOKEN, REFRESH_TOKEN, USER_AGENT, ACTIVATION_CODE)
-        VALUES (#{id}, #{accountId}, #{accessToken}, #{refreshToken}, #{userAgent}, #{activationCode})
+        INSERT INTO DEVICE (ID,
+                            ACCOUNT_ID,
+                            ACCESS_TOKEN,
+                            REFRESH_TOKEN,
+                            USER_AGENT,
+                            ACTIVATION_CODE)
+        VALUES (#{id},
+                #{accountId},
+                #{accessToken},
+                #{refreshToken},
+                #{userAgent},
+                #{activationCode})
     </insert>
 
     <update id="updateDevice" parameterType="space.cuongnh2k.rest.device.query.UpdateDevicePrt">
@@ -34,20 +44,33 @@
         <set>
             <if test="accessToken != null">ACCESS_TOKEN = #{accessToken},</if>
             <if test="refreshToken != null">REFRESH_TOKEN = #{refreshToken},</if>
-            <if test="activationCodeUseUpdate != null">ACTIVATION_CODE = #{activationCodeUseUpdate},</if>
+            <if test="activationCodeUpdate != null">ACTIVATION_CODE = #{activationCodeUpdate},</if>
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
-            <if test="isDeleted != null">IS_DELETED = #{isDeleted},</if>
         </set>
         <where>
-            <if test="id != null">ID = #{id}</if>
-            <if test="accountId != null">AND ACCOUNT_ID = #{accountId}</if>
-            <if test="activationCodeUseActive != null">AND ACTIVATION_CODE = #{activationCodeUseActive}</if>
+            IS_DELETED = 'NO'
+            <if test="id != null">AND ID = #{id}</if>
+            <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
+            <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
+        </where>
+    </update>
+
+    <update id="deleteDevice" parameterType="space.cuongnh2k.rest.device.query.DeleteDevicePrt">
+        /* space.cuongnh2k.rest.device.DeviceRepository.deleteDevice */
+        UPDATE DEVICE
+        <set>
+            IS_DELETED = 'YES'
+        </set>
+        <where>
+            IS_DELETED = 'NO'
+            AND IS_ACTIVATED = 'NO'
+            AND ACCOUNT_ID = #{accountId}
             <if test="ids != null">
                 <foreach item="item" index="index" collection="ids" open="AND ID IN (" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-            <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
         </where>
     </update>
+
 </mapper>

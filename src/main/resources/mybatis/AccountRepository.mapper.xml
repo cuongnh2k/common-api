@@ -27,22 +27,18 @@
 
     <insert id="createAccount" parameterType="space.cuongnh2k.rest.account.query.CreateAccountPrt">
         /* space.cuongnh2k.rest.account.AccountRepository.createAccount */
-        INSERT INTO ACCOUNT (
-        <if test="id != null">ID,</if>
-        <if test="email != null">EMAIL,</if>
-        <if test="password != null">PASSWORD,</if>
-        <if test="firstName != null">FIRST_NAME,</if>
-        <if test="lastName != null">LAST_NAME,</if>
-        <if test="activationCode != null">ACTIVATION_CODE</if>
-        )
-        VALUES (
-        <if test="id != null">#{id},</if>
-        <if test="email != null">#{email},</if>
-        <if test="password != null">#{password},</if>
-        <if test="firstName != null">#{firstName},</if>
-        <if test="lastName != null">#{lastName},</if>
-        <if test="activationCode != null">#{activationCode}</if>
-        )
+        INSERT INTO ACCOUNT (ID,
+                             EMAIL,
+                             PASSWORD,
+                             FIRST_NAME,
+                             LAST_NAME,
+                             ACTIVATION_CODE)
+        VALUES (#{id},
+                #{email},
+                #{password},
+                #{firstName},
+                #{lastName},
+                #{activationCode})
     </insert>
 
     <update id="updateAccount" parameterType="space.cuongnh2k.rest.account.query.UpdateAccountPrt">
@@ -56,9 +52,13 @@
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
         </set>
         <where>
-            <if test="id != null">ID = #{id}</if>
+            IS_DELETED = 'NO'
+            <if test="id != null">AND ID = #{id}</if>
             <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
             <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
+            <if test="password != null or firstName != null or lastName != null or avatarFileId != null">
+                AND IS_ACTIVATED = 'YES'
+            </if>
         </where>
     </update>
 </mapper>

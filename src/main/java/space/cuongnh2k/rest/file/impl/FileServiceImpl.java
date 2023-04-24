@@ -15,16 +15,15 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
-import space.cuongnh2k.core.enums.IsDeleted;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.file.FileRepository;
 import space.cuongnh2k.rest.file.FileService;
 import space.cuongnh2k.rest.file.dto.FileRes;
 import space.cuongnh2k.rest.file.query.CreateFilePrt;
+import space.cuongnh2k.rest.file.query.DeleteFilePrt;
 import space.cuongnh2k.rest.file.query.FileRss;
 import space.cuongnh2k.rest.file.query.GetFilePrt;
-import space.cuongnh2k.rest.file.query.UpdateFilePrt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -106,10 +105,9 @@ public class FileServiceImpl implements FileService {
         listFileRss = fileRepository.getFile(GetFilePrt.builder()
                 .ownerId(authContext.getAccountId())
                 .ids(ids).build());
-        if (fileRepository.updateFile(UpdateFilePrt.builder()
+        if (fileRepository.deleteFile(DeleteFilePrt.builder()
                 .ids(ids)
                 .ownerId(authContext.getAccountId())
-                .isDeleted(IsDeleted.YES)
                 .build()) != ids.size()) {
             throw new BusinessLogicException();
         }
