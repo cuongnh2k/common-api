@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
+import space.cuongnh2k.core.enums.AccessEnum;
 
 import java.util.List;
 
@@ -20,8 +21,9 @@ public class FileController {
 
     @Privileges
     @PostMapping
-    public ResponseEntity<BaseResponseDto> uploadFile(@RequestParam List<MultipartFile> files) {
-        return BaseResponseDto.success("Upload file successful", fileService.uploadFile(files));
+    public ResponseEntity<BaseResponseDto> uploadFile(@RequestParam(defaultValue = "PRIVATE") AccessEnum access,
+                                                      @RequestParam List<MultipartFile> files) {
+        return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, files));
     }
 
     @Privileges
@@ -31,6 +33,7 @@ public class FileController {
         return BaseResponseDto.success("Deleted file successful");
     }
 
+    @Privileges
     @GetMapping(value = "/{id}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable @UUID String id) {
         return fileService.downloadFile(id);

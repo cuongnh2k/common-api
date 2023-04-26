@@ -24,20 +24,22 @@
         </where>
     </select>
 
-    <insert id="uploadFile" parameterType="java.util.List">
-        /* space.cuongnh2k.rest.file.FileRepository.uploadFile */
+    <insert id="createFile" parameterType="java.util.List">
+        /* space.cuongnh2k.rest.file.FileRepository.createFile */
         INSERT INTO FILE (ID,
         OWNER_ID,
         NAME,
         CONTENT_TYPE,
-        SIZE)
+        SIZE,
+        ACCESS)
         VALUES
         <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
             #{element.id},
             #{element.ownerId},
             #{element.name},
             #{element.contentType},
-            #{element.size}
+            #{element.size},
+            #{element.access}
         </foreach>
     </insert>
 

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import space.cuongnh2k.core.context.AuthContext;
+import space.cuongnh2k.core.enums.AccessEnum;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
@@ -42,10 +43,10 @@ public class FileServiceImpl implements FileService {
     private final FileRepository fileRepository;
 
     @Value("${application.bucket-name}")
-    private String BUCKET_NAME_PRIVATE;
+    private String BUCKET_NAME;
 
     @Override
-    public List<FileRes> uploadFile(List<MultipartFile> files) {
+    public List<FileRes> uploadFile(AccessEnum access, List<MultipartFile> files) {
         List<CreateFilePrt> listPrt = new ArrayList<>();
         //valid
         for (MultipartFile file : files) {
@@ -64,12 +65,13 @@ public class FileServiceImpl implements FileService {
                             : originalFilename.toLowerCase())
                     .contentType(file.getContentType())
                     .size(file.getSize())
+                    .access(access)
                     .fileExtension(fileExtension.toLowerCase())
                     .file(file)
                     .build());
         }
         // insert
-        if (fileRepository.uploadFile(listPrt) != listPrt.size()) {
+        if (fileRepository.createFile(listPrt) != listPrt.size()) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0013);
         }
         listPrt.forEach(o -> {
@@ -77,7 +79,7 @@ public class FileServiceImpl implements FileService {
             metadata.setContentLength(o.getFile().getSize());
             metadata.setContentType(o.getContentType());
             try {
-                amazonS3.putObject(BUCKET_NAME_PRIVATE,
+                amazonS3.putObject(BUCKET_NAME,
                         authContext.getAccountId() + "/" + o.getId() + "." + o.getFileExtension(),
                         o.getFile().getInputStream(),
                         metadata);
@@ -109,7 +111,7 @@ public class FileServiceImpl implements FileService {
         }
         try {
             listFileRss.forEach(o ->
-                    amazonS3.deleteObject(BUCKET_NAME_PRIVATE,
+                    amazonS3.deleteObject(BUCKET_NAME,
                             authContext.getAccountId() + "/" + o.getId() + o.getName().substring(o.getName().lastIndexOf(".")))
 
             );
@@ -130,7 +132,7 @@ public class FileServiceImpl implements FileService {
         }
         try {
             S3Object s3object = amazonS3.getObject(
-                    new GetObjectRequest(BUCKET_NAME_PRIVATE,
+                    new GetObjectRequest(BUCKET_NAME,
                             listFileRss.get(0).getOwnerId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
             return ResponseEntity.ok()
                     .header("Content-Type", listFileRss.get(0).getContentType())
