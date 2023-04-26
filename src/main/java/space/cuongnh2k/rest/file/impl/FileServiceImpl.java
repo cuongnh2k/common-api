@@ -130,6 +130,9 @@ public class FileServiceImpl implements FileService {
         if (CollectionUtils.isEmpty(listFileRss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
         }
+        if (listFileRss.get(0).getAccess() == AccessEnum.PRIVATE && authContext.getAccount() == null) {
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0016);
+        }
         try {
             S3Object s3object = amazonS3.getObject(
                     new GetObjectRequest(BUCKET_NAME,

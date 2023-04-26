@@ -10,7 +10,8 @@
         OWNER_ID,
         NAME,
         CONTENT_TYPE,
-        SIZE
+        SIZE,
+        ACCESS
         FROM FILE
         <where>
             IS_DELETED = 'NO'

@@ -23,6 +23,7 @@ import space.cuongnh2k.core.base.BaseResponseDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,14 +57,17 @@ public class GeneralFilter extends OncePerRequestFilter {
         if (handlerMethod != null) {
             Privileges privilegeAnnotation = handlerMethod.getMethodAnnotation(Privileges.class);
             if (privilegeAnnotation != null) {
-                String verifyToken = tokenFilter.filter();
-                if (verifyToken != null) {
-                    listError.add(verifyToken);
-                } else {
+                List<String> listPrivilege = Arrays.asList(privilegeAnnotation.value());
+                if (!CollectionUtils.isEmpty(listPrivilege)) {
+                    String verifyToken = tokenFilter.filter();
                     String verifyDevice = deviceFilter.filter();
-                    if (verifyDevice != null) {
-                        listError.add(verifyDevice);
-                    }
+
+                    if (listPrivilege.stream().noneMatch(o -> o.equals("OPTIONAL")))
+                        if (verifyToken != null) {
+                            listError.add(verifyToken);
+                        } else if (verifyDevice != null) {
+                            listError.add(verifyDevice);
+                        }
                 }
             }
         }

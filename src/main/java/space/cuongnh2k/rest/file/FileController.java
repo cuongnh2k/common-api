@@ -19,21 +19,21 @@ import java.util.List;
 public class FileController {
     private final FileService fileService;
 
-    @Privileges
+    @Privileges("")
     @PostMapping
     public ResponseEntity<BaseResponseDto> uploadFile(@RequestParam(defaultValue = "PRIVATE") AccessEnum access,
                                                       @RequestParam List<MultipartFile> files) {
         return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, files));
     }
 
-    @Privileges
+    @Privileges("")
     @PostMapping("/delete")
     public ResponseEntity<BaseResponseDto> deleteFile(@RequestBody @UUID List<String> ids) {
         fileService.deleteFile(ids);
         return BaseResponseDto.success("Deleted file successful");
     }
 
-    @Privileges
+    @Privileges("OPTIONAL")
     @GetMapping(value = "/{id}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable @UUID String id) {
         return fileService.downloadFile(id);
