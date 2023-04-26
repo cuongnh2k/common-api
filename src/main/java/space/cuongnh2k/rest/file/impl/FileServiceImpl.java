@@ -44,9 +44,6 @@ public class FileServiceImpl implements FileService {
     @Value("${application.bucket-name}")
     private String BUCKET_NAME_PRIVATE;
 
-    @Value("${application.max-file-size}")
-    private Integer MAX_FILE_SIZE;
-
     @Override
     public List<FileRes> uploadFile(List<MultipartFile> files) {
         List<CreateFilePrt> listPrt = new ArrayList<>();
@@ -123,6 +120,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> downloadFile(String id) {
         List<FileRss> listFileRss = fileRepository.getFile(GetFilePrt.builder()
                 .id(id)
