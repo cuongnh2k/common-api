@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import space.cuongnh2k.core.filter.GeneralFilter;
 import space.cuongnh2k.core.utils.UserDetailServiceUtil;
 
 import java.util.Properties;
@@ -27,7 +28,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final FilterConfig filterConfig;
+    private final GeneralFilter generalFilter;
     private final UserDetailServiceUtil userDetailServiceUtil;
 
     @Value("${application.email.username}")
@@ -85,7 +86,7 @@ public class WebSecurityConfig {
 //        http.authorizeHttpRequests(auth -> auth
 //                .requestMatchers("/**").permitAll()
 //                .anyRequest().authenticated());
-        http.addFilterBefore(filterConfig, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(generalFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

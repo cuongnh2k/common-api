@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
+import space.cuongnh2k.core.enums.AccessEnum;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ public class CreateFilePrt {
     private String name;
     private String contentType;
     private Long size;
+    private AccessEnum access;
     private String fileExtension;
     private MultipartFile file;
 }

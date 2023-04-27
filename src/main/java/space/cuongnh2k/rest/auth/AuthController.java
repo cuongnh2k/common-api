@@ -23,13 +23,13 @@ public class AuthController {
         return BaseResponseDto.success("Login successful", authService.login(req));
     }
 
-    @Privileges
+    @Privileges("")
     @PatchMapping("refresh-token")
     public ResponseEntity<BaseResponseDto> refreshToken() {
         return BaseResponseDto.success("Refresh token successful", authService.refreshToken());
     }
 
-    @Privileges
+    @Privileges("")
     @GetMapping("/check")
     public ResponseEntity<BaseResponseDto> check() {
         return BaseResponseDto.success(authContext.getAccount());
