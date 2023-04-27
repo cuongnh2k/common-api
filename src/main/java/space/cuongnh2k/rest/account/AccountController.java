@@ -30,7 +30,7 @@ public class AccountController {
         return BaseResponseDto.success("Active account successful");
     }
 
-    @Privileges
+    @Privileges("")
     @PatchMapping
     public ResponseEntity<BaseResponseDto> updateAccount(@RequestBody @Valid UpdateAccountReq req) {
         accountService.updateAccount(req);

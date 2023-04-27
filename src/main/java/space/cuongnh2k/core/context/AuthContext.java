@@ -37,6 +37,11 @@ public class AuthContext {
             }
         } catch (Exception e) {
             log.error(e);
+            this.bearer = null;
+            this.accountId = null;
+            this.tokenType = null;
+            this.deviceId = null;
+            this.account = null;
             return e.getMessage();
         }
         return null;

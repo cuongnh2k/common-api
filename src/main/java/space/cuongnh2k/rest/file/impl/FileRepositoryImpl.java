@@ -22,8 +22,8 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public int uploadFile(List<CreateFilePrt> listPrt) {
-        return sqlSession.insert("space.cuongnh2k.rest.file.FileRepository.uploadFile", listPrt);
+    public int createFile(List<CreateFilePrt> listPrt) {
+        return sqlSession.insert("space.cuongnh2k.rest.file.FileRepository.createFile", listPrt);
     }
 
     @Override

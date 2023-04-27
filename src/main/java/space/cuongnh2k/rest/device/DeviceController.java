@@ -25,7 +25,7 @@ public class DeviceController {
         return BaseResponseDto.success("Active account successful");
     }
 
-    @Privileges
+    @Privileges("")
     @PostMapping
     public ResponseEntity<BaseResponseDto> logout(@RequestParam(defaultValue = "false") Boolean isLogoutAll,
                                                   @RequestBody @UUID List<String> ids) {
@@ -33,7 +33,7 @@ public class DeviceController {
         return BaseResponseDto.success("Logout successful");
     }
 
-    @Privileges
+    @Privileges("")
     @GetMapping
     public ResponseEntity<BaseResponseDto> getListDevice() {
         return BaseResponseDto.success("Get data successful", deviceService.getListDevice());

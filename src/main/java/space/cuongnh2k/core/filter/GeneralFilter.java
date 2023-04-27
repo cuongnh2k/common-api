@@ -1,4 +1,4 @@
-package space.cuongnh2k.core.config;
+package space.cuongnh2k.core.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -20,30 +20,23 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
-import space.cuongnh2k.core.context.AuthContext;
-import space.cuongnh2k.core.enums.IsActivated;
-import space.cuongnh2k.core.enums.TokenTypeEnum;
-import space.cuongnh2k.rest.device.DeviceRepository;
-import space.cuongnh2k.rest.device.query.DeviceRss;
-import space.cuongnh2k.rest.device.query.GetDevicePrt;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class FilterConfig extends OncePerRequestFilter {
-    private final DeviceRepository deviceRepository;
+public class GeneralFilter extends OncePerRequestFilter {
     private final ApplicationContext applicationContext;
-    private final AuthContext authContext;
     private final MessageSource messageSource;
+    private final TokenFilter tokenFilter;
+    private final DeviceFilter deviceFilter;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -64,44 +57,17 @@ public class FilterConfig extends OncePerRequestFilter {
         if (handlerMethod != null) {
             Privileges privilegeAnnotation = handlerMethod.getMethodAnnotation(Privileges.class);
             if (privilegeAnnotation != null) {
-                String verifyToken = authContext.setAuth(request.getHeader(AUTHORIZATION));
-                if (verifyToken != null) {
-                    listError.add(verifyToken);
-                } else {
-                    boolean checkTokenType = true;
-                    GetDevicePrt devicePrt;
-                    if (request.getRequestURI().contains("/auth/refresh-token")) {
-                        devicePrt = GetDevicePrt.builder()
-                                .id(authContext.getDeviceId())
-                                .accountId(authContext.getAccountId())
-                                .refreshToken(authContext.getBearer())
-                                .userAgent(request.getHeader(USER_AGENT))
-                                .build();
-                        if (!authContext.getTokenType().equals(TokenTypeEnum.REFRESH_TOKEN.toString())) {
-                            checkTokenType = false;
-                        }
-                    } else {
-                        devicePrt = GetDevicePrt.builder()
-                                .id(authContext.getDeviceId())
-                                .accountId(authContext.getAccountId())
-                                .accessToken(authContext.getBearer())
-                                .userAgent(request.getHeader(USER_AGENT))
-                                .build();
-                        if (!authContext.getTokenType().equals(TokenTypeEnum.ACCESS_TOKEN.toString())) {
-                            checkTokenType = false;
-                        }
-                    }
-                    if (!checkTokenType) {
-                        listError.add("Sai loại token");
-                    } else {
-                        List<DeviceRss> listDeviceRss = deviceRepository.getDevice(devicePrt);
-                        if (CollectionUtils.isEmpty(listDeviceRss)) {
-                            listError.add("Thiết bị đã đăng xuất");
-                        } else if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
-                            listError.add("Thiết bị chưa được kích hoạt");
-                        }
-                    }
+                List<String> listPrivilege = Arrays.asList(privilegeAnnotation.value());
+                if (!CollectionUtils.isEmpty(listPrivilege)) {
+                    String verifyToken = tokenFilter.filter();
+                    String verifyDevice = deviceFilter.filter();
 
+                    if (listPrivilege.stream().noneMatch(o -> o.equals("OPTIONAL")))
+                        if (verifyToken != null) {
+                            listError.add(verifyToken);
+                        } else if (verifyDevice != null) {
+                            listError.add(verifyDevice);
+                        }
                 }
             }
         }

@@ -11,7 +11,7 @@ public interface FileRepository {
 
     List<FileRss> getFile(GetFilePrt prt);
 
-    int uploadFile(List<CreateFilePrt> listPrt);
+    int createFile(List<CreateFilePrt> listPrt);
 
     int deleteFile(DeleteFilePrt prt);
 }
