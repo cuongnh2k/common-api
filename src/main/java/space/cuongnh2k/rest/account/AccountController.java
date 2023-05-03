@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import space.cuongnh2k.core.annotation.Privileges;
+import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
 import space.cuongnh2k.rest.account.dto.CreateAccountReq;
@@ -17,6 +18,12 @@ import space.cuongnh2k.rest.account.dto.UpdateAccountReq;
 @RequestMapping("/account")
 public class AccountController {
     private final AccountService accountService;
+
+    @Privileges("")
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponseDto> searchAccount(@PathVariable @UUID String id) {
+        return BaseResponseDto.success(accountService.searchAccount(id));
+    }
 
     @PostMapping
     public ResponseEntity<BaseResponseDto> createAccount(@RequestBody @Valid CreateAccountReq req) {
