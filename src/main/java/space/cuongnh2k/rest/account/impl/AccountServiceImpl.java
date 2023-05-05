@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
@@ -14,10 +15,14 @@ import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.AccountService;
 import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
 import space.cuongnh2k.rest.account.dto.CreateAccountReq;
+import space.cuongnh2k.rest.account.dto.SearchAccountRes;
 import space.cuongnh2k.rest.account.dto.UpdateAccountReq;
+import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.CreateAccountPrt;
+import space.cuongnh2k.rest.account.query.GetAccountPrt;
 import space.cuongnh2k.rest.account.query.UpdateAccountPrt;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -29,6 +34,17 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final SendEmailUtil sendEmailUtil;
     private final AuthContext authContext;
+
+    @Override
+    public SearchAccountRes searchAccount(String id) {
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(id).build());
+        if (CollectionUtils.isEmpty(rss)) {
+            throw new BusinessLogicException();
+        }
+        SearchAccountRes res = new SearchAccountRes();
+        BeanCopyUtil.copyProperties(res, rss.get(0));
+        return res;
+    }
 
     @Override
     public void createAccount(CreateAccountReq req) {
