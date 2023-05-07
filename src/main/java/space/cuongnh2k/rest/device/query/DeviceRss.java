@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 public class DeviceRss {
     private String id;
     private String userAgent;
+    private String activationCode;
     private IsActivated isActivated;
     private Timestamp createdDate;
     private Timestamp updatedDate;

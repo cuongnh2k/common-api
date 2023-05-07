@@ -32,16 +32,18 @@ public class SendEmailUtil {
                     "<div style=\"margin: 100px auto; width: 100px;\">\n" +
                     "    <a href=\"https://cuongnh2k.space/activate?cid=" + cid + "&code=" + code + "\">\n" +
                     "        <button style=\" height: 50px;\n" +
-                    "                        width: 100px;\n" +
+                    "                        width: 200px;\n" +
                     "                        color: white;\n" +
                     "                        background-color: forestgreen;\n" +
                     "                        border-radius: 5px;\n" +
                     "                        font-size: 18px;\n" +
                     "                        cursor: pointer;\n" +
                     "                        border: none;\">\n" +
-                    "            Kích hoạt\n" +
+                    "            Dùng web thì click vào đây nhé\n" +
                     "        </button>\n" +
                     "    </a>\n" +
+                    "    <h1>CID " + cid + "</h1>\n" +
+                    "    <h1>CODE " + code + "</h1>\n" +
                     "</div>\n" +
                     "</body>\n" +
                     "</html>", "text/html; charset=UTF-8");
@@ -71,16 +73,18 @@ public class SendEmailUtil {
                     "<div style=\"margin: 100px auto; width: 100px;\">\n" +
                     "    <a href=\"https://cuongnh2k.space/activate?deviceId=" + deviceId + "&code=" + code + "\">\n" +
                     "        <button style=\" height: 50px;\n" +
-                    "                        width: 100px;\n" +
+                    "                        width: 200px;\n" +
                     "                        color: white;\n" +
                     "                        background-color: forestgreen;\n" +
                     "                        border-radius: 5px;\n" +
                     "                        font-size: 18px;\n" +
                     "                        cursor: pointer;\n" +
                     "                        border: none;\">\n" +
-                    "            Kích hoạt\n" +
+                    "            Dùng web thì click vào đây nhé\n" +
                     "        </button>\n" +
                     "    </a>\n" +
+                    "    <h1>DEVICE_ID " + deviceId + "</h1>\n" +
+                    "    <h1>CODE " + code + "</h1>\n" +
                     "</div>\n" +
                     "</body>\n" +
                     "</html>\n", "text/html; charset=UTF-8");

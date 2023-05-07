@@ -82,26 +82,15 @@ public class AuthServiceImpl implements AuthService {
             sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), deviceId, activationCode);
         } else {
             loginRes = jwtCrypto.encode(listAccountRss.get(0), listDeviceRss.get(0).getId());
-            UpdateDevicePrt prt;
-            if (listDeviceRss.get(0).getIsActivated() == IsActivated.YES) {
-                prt = UpdateDevicePrt.builder()
-                        .id(listDeviceRss.get(0).getId())
-                        .accessToken(loginRes.getAccessToken())
-                        .refreshToken(loginRes.getRefreshToken())
-                        .build();
-            } else {
-                prt = UpdateDevicePrt.builder()
-                        .id(listDeviceRss.get(0).getId())
-                        .accessToken(loginRes.getAccessToken())
-                        .refreshToken(loginRes.getRefreshToken())
-                        .activationCodeUpdate(activationCode)
-                        .build();
-            }
-            if (deviceRepository.updateDevice(prt) != 1) {
+            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+                    .id(listDeviceRss.get(0).getId())
+                    .accessToken(loginRes.getAccessToken())
+                    .refreshToken(loginRes.getRefreshToken())
+                    .build()) != 1) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0005);
             }
             if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
-                sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), listDeviceRss.get(0).getId(), activationCode);
+                sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), listDeviceRss.get(0).getId(), listDeviceRss.get(0).getActivationCode());
             }
         }
         return loginRes;
