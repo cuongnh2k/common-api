@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.base.BaseResponseDto;
-import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.rest.auth.dto.LoginReq;
 
 @Validated
@@ -16,7 +15,6 @@ import space.cuongnh2k.rest.auth.dto.LoginReq;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final AuthContext authContext;
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponseDto> login(@RequestBody @Valid LoginReq req) {
@@ -31,7 +29,7 @@ public class AuthController {
 
     @Privileges("")
     @GetMapping("/check")
-    public ResponseEntity<BaseResponseDto> check() {
-        return BaseResponseDto.success(authContext.getAccount());
+    public ResponseEntity<BaseResponseDto> getDetailAccount() {
+        return BaseResponseDto.success(authService.getDetailAccount());
     }
 }

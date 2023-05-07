@@ -36,8 +36,8 @@ public class AccountServiceImpl implements AccountService {
     private final AuthContext authContext;
 
     @Override
-    public SearchAccountRes searchAccount(String id) {
-        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(id).build());
+    public SearchAccountRes searchAccount(String email) {
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().email(email).build());
         if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException();
         }
