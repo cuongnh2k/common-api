@@ -7,6 +7,7 @@
         SELECT
         ID,
         USER_AGENT,
+        ACTIVATION_CODE,
         IS_ACTIVATED,
         CREATED_DATE,
         UPDATED_DATE

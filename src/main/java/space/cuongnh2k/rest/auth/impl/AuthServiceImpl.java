@@ -13,11 +13,13 @@ import space.cuongnh2k.core.crypto.JwtCrypto;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
+import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.GetAccountPrt;
 import space.cuongnh2k.rest.auth.AuthService;
+import space.cuongnh2k.rest.auth.dto.AccountRes;
 import space.cuongnh2k.rest.auth.dto.LoginReq;
 import space.cuongnh2k.rest.auth.dto.LoginRes;
 import space.cuongnh2k.rest.device.DeviceRepository;
@@ -82,26 +84,15 @@ public class AuthServiceImpl implements AuthService {
             sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), deviceId, activationCode);
         } else {
             loginRes = jwtCrypto.encode(listAccountRss.get(0), listDeviceRss.get(0).getId());
-            UpdateDevicePrt prt;
-            if (listDeviceRss.get(0).getIsActivated() == IsActivated.YES) {
-                prt = UpdateDevicePrt.builder()
-                        .id(listDeviceRss.get(0).getId())
-                        .accessToken(loginRes.getAccessToken())
-                        .refreshToken(loginRes.getRefreshToken())
-                        .build();
-            } else {
-                prt = UpdateDevicePrt.builder()
-                        .id(listDeviceRss.get(0).getId())
-                        .accessToken(loginRes.getAccessToken())
-                        .refreshToken(loginRes.getRefreshToken())
-                        .activationCodeUpdate(activationCode)
-                        .build();
-            }
-            if (deviceRepository.updateDevice(prt) != 1) {
+            if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+                    .id(listDeviceRss.get(0).getId())
+                    .accessToken(loginRes.getAccessToken())
+                    .refreshToken(loginRes.getRefreshToken())
+                    .build()) != 1) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0005);
             }
             if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
-                sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), listDeviceRss.get(0).getId(), activationCode);
+                sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), listDeviceRss.get(0).getId(), listDeviceRss.get(0).getActivationCode());
             }
         }
         return loginRes;
@@ -120,5 +111,15 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
         }
         return refreshTokenRes;
+    }
+
+    @Override
+    public AccountRes getDetailAccount() {
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                .id(authContext.getAccountId())
+                .build());
+        AccountRes res = new AccountRes();
+        BeanCopyUtil.copyProperties(res, listAccountRss.get(0));
+        return res;
     }
 }

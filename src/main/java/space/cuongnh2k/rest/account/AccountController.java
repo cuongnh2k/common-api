@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import space.cuongnh2k.core.annotation.Email;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
@@ -20,9 +21,9 @@ public class AccountController {
     private final AccountService accountService;
 
     @Privileges("")
-    @GetMapping("/{id}")
-    public ResponseEntity<BaseResponseDto> searchAccount(@PathVariable @UUID String id) {
-        return BaseResponseDto.success(accountService.searchAccount(id));
+    @GetMapping("/{email}")
+    public ResponseEntity<BaseResponseDto> searchAccount(@PathVariable @Email String email) {
+        return BaseResponseDto.success(accountService.searchAccount(email));
     }
 
     @PostMapping
