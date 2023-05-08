@@ -19,7 +19,7 @@ public class SendEmailUtil {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
-            message.setContent("<!doctype html>\n" +
+            message.setContent("<!DOCTYPE html>\n" +
                     "<html lang=\"vi-VN\">\n" +
                     "<head>\n" +
                     "    <meta charset=\"UTF-8\">\n" +
@@ -29,21 +29,31 @@ public class SendEmailUtil {
                     "    <title>Kích hoạt tài khoản</title>\n" +
                     "</head>\n" +
                     "<body>\n" +
-                    "<div style=\"margin: 100px auto; width: 100px;\">\n" +
-                    "    <a href=\"https://cuongnh2k.space/activate?cid=" + cid + "&code=" + code + "\">\n" +
+                    "<div style=\"margin: 100px auto; width: 275px;\">\n" +
+                    "    <a href=\"https://cuongnh2k.space/activate?cid=" + cid + "&code=" + code + "\" target=\"_blank\">\n" +
                     "        <button style=\" height: 50px;\n" +
-                    "                        width: 200px;\n" +
+                    "                        width: 100%;\n" +
                     "                        color: white;\n" +
                     "                        background-color: forestgreen;\n" +
                     "                        border-radius: 5px;\n" +
-                    "                        font-size: 18px;\n" +
+                    "                        font-size: 17px;\n" +
                     "                        cursor: pointer;\n" +
                     "                        border: none;\">\n" +
                     "            Dùng web thì click vào đây nhé\n" +
                     "        </button>\n" +
                     "    </a>\n" +
-                    "    <h1>CID " + cid + "</h1>\n" +
-                    "    <h1>CODE " + code + "</h1>\n" +
+                    "    <div style=\"margin-top: 50px; cursor: pointer;\" onclick=\"myFunction1()\">\n" +
+                    "        <span id=\"copyText1\" style=\"font-size: 12px;\">\n" +
+                    "            id: " + cid + "\n" +
+                    "        </span>\n" +
+                    "    </div>\n" +
+                    "    <div style=\"margin-top: 50px;\n" +
+                    "            cursor: pointer;\"\n" +
+                    "         onclick=\"myFunction2()\">\n" +
+                    "        <span id=\"copyText2\" style=\"font-size: 12px;\">\n" +
+                    "           code: " + code + "\n" +
+                    "        </span>\n" +
+                    "    </div>\n" +
                     "</div>\n" +
                     "</body>\n" +
                     "</html>", "text/html; charset=UTF-8");
@@ -60,7 +70,7 @@ public class SendEmailUtil {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
-            message.setContent("<!doctype html>\n" +
+            message.setContent("<!DOCTYPE html>\n" +
                     "<html lang=\"vi-VN\">\n" +
                     "<head>\n" +
                     "    <meta charset=\"UTF-8\">\n" +
@@ -70,24 +80,34 @@ public class SendEmailUtil {
                     "    <title>Kích hoạt thiết bị</title>\n" +
                     "</head>\n" +
                     "<body>\n" +
-                    "<div style=\"margin: 100px auto; width: 100px;\">\n" +
-                    "    <a href=\"https://cuongnh2k.space/activate?deviceId=" + deviceId + "&code=" + code + "\">\n" +
+                    "<div style=\"margin: 100px auto; width: 275px;\">\n" +
+                    "    <a href=\"https://cuongnh2k.space/activate?deviceId=" + deviceId + "&code=" + code + "\" target=\"_blank\">\n" +
                     "        <button style=\" height: 50px;\n" +
-                    "                        width: 200px;\n" +
+                    "                        width: 100%;\n" +
                     "                        color: white;\n" +
                     "                        background-color: forestgreen;\n" +
                     "                        border-radius: 5px;\n" +
-                    "                        font-size: 18px;\n" +
+                    "                        font-size: 17px;\n" +
                     "                        cursor: pointer;\n" +
                     "                        border: none;\">\n" +
                     "            Dùng web thì click vào đây nhé\n" +
                     "        </button>\n" +
                     "    </a>\n" +
-                    "    <h1>DEVICE_ID " + deviceId + "</h1>\n" +
-                    "    <h1>CODE " + code + "</h1>\n" +
+                    "    <div style=\"margin-top: 50px; cursor: pointer;\" onclick=\"myFunction1()\">\n" +
+                    "        <span id=\"copyText1\" style=\"font-size: 12px;\">\n" +
+                    "            id: " + deviceId + "\n" +
+                    "        </span>\n" +
+                    "    </div>\n" +
+                    "    <div style=\"margin-top: 50px;\n" +
+                    "            cursor: pointer;\"\n" +
+                    "         onclick=\"myFunction2()\">\n" +
+                    "        <span id=\"copyText2\" style=\"font-size: 12px;\">\n" +
+                    "           code: " + code + "\n" +
+                    "        </span>\n" +
+                    "    </div>\n" +
                     "</div>\n" +
                     "</body>\n" +
-                    "</html>\n", "text/html; charset=UTF-8");
+                    "</html>", "text/html; charset=UTF-8");
             helper.setTo(to);
             helper.setSubject("Kích hoạt thiết bị");
             javaMailSender.send(message);
