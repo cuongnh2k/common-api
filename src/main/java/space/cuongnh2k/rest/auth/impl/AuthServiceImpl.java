@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
 
         String activationCode = UUID.randomUUID().toString();
         if (listAccountRss.get(0).getIsActivated() == IsActivated.NO) {
-            if (listAccountRss.get(0).getUpdatedDate().plusMinutes(30).compareTo(LocalDateTime.now()) > 0) {
+            if (listAccountRss.get(0).getUpdatedDate().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
                 if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                         .id(listAccountRss.get(0).getId())
                         .activationCodeUseUpdate(activationCode)
@@ -106,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(loginRes.getRefreshToken())
                     .build();
             if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
-                if (listDeviceRss.get(0).getUpdatedDate().toLocalDateTime().plusMinutes(30).compareTo(LocalDateTime.now()) > 0) {
+                if (listDeviceRss.get(0).getUpdatedDate().toLocalDateTime().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
                     devicePrt = UpdateDevicePrt.builder()
                             .id(listDeviceRss.get(0).getId())
                             .accessToken(loginRes.getAccessToken())

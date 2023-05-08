@@ -1,9 +1,6 @@
 package space.cuongnh2k.rest.account;
 
-import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
-import space.cuongnh2k.rest.account.dto.CreateAccountReq;
-import space.cuongnh2k.rest.account.dto.SearchAccountRes;
-import space.cuongnh2k.rest.account.dto.UpdateAccountReq;
+import space.cuongnh2k.rest.account.dto.*;
 
 public interface AccountService {
     SearchAccountRes searchAccount(String id);
@@ -13,4 +10,8 @@ public interface AccountService {
     void activeAccount(ActiveAccountReq req);
 
     void updateAccount(UpdateAccountReq req);
+
+    void confirmResetPassword(String id);
+
+    Object getNewPassword(GetNewPasswordReq req);
 }

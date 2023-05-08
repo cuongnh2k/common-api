@@ -11,6 +11,7 @@ import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
 import space.cuongnh2k.rest.account.dto.CreateAccountReq;
+import space.cuongnh2k.rest.account.dto.GetNewPasswordReq;
 import space.cuongnh2k.rest.account.dto.UpdateAccountReq;
 
 @Validated
@@ -43,5 +44,16 @@ public class AccountController {
     public ResponseEntity<BaseResponseDto> updateAccount(@RequestBody @Valid UpdateAccountReq req) {
         accountService.updateAccount(req);
         return BaseResponseDto.success("Update account successful");
+    }
+
+    @PostMapping("{id}/confirm-reset-password")
+    public ResponseEntity<BaseResponseDto> confirmResetPassword(@PathVariable @UUID String id) {
+        accountService.confirmResetPassword(id);
+        return BaseResponseDto.success("");
+    }
+
+    @PostMapping("/get-new-password")
+    public ResponseEntity<BaseResponseDto> getNewPassword(@RequestBody @Valid GetNewPasswordReq req) {
+        return BaseResponseDto.success(accountService.getNewPassword(req));
     }
 }

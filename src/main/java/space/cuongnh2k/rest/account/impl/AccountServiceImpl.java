@@ -13,15 +13,13 @@ import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.AccountService;
-import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
-import space.cuongnh2k.rest.account.dto.CreateAccountReq;
-import space.cuongnh2k.rest.account.dto.SearchAccountRes;
-import space.cuongnh2k.rest.account.dto.UpdateAccountReq;
+import space.cuongnh2k.rest.account.dto.*;
 import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.CreateAccountPrt;
 import space.cuongnh2k.rest.account.query.GetAccountPrt;
 import space.cuongnh2k.rest.account.query.UpdateAccountPrt;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,5 +77,47 @@ public class AccountServiceImpl implements AccountService {
         if (accountRepository.updateAccount(prt) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0011);
         }
+    }
+
+    @Override
+    public void confirmResetPassword(String id) {
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                .id(id)
+                .build());
+        if (CollectionUtils.isEmpty(listAccountRss)) {
+            throw new BusinessLogicException();
+        }
+        if (listAccountRss.get(0).getUpdatedDate().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+            String code = UUID.randomUUID().toString();
+            if (accountRepository.updateAccount(UpdateAccountPrt.builder()
+                    .id(listAccountRss.get(0).getId())
+                    .activationCodeUseUpdate(code)
+                    .build()) != 1) {
+                throw new BusinessLogicException();
+            }
+            sendEmailUtil.confirmResetPassword(listAccountRss.get(0).getEmail(), listAccountRss.get(0).getId(), code);
+        }
+    }
+
+    @Override
+    public Object getNewPassword(GetNewPasswordReq req) {
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                .id(req.getId())
+                .build());
+        if (CollectionUtils.isEmpty(listAccountRss)) {
+            throw new BusinessLogicException();
+        }
+        if (listAccountRss.get(0).getUpdatedDate().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+            throw new BusinessLogicException();
+        }
+        String password = UUID.randomUUID().toString();
+        if (accountRepository.updateAccount(UpdateAccountPrt.builder()
+                .password(passwordEncoder.encode(password))
+                .id(req.getId())
+                .activationCode(req.getActivationCode())
+                .build()) != 1) {
+            throw new BusinessLogicException();
+        }
+        return password;
     }
 }

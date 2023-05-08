@@ -29,31 +29,21 @@ public class SendEmailUtil {
                     "    <title>Kích hoạt tài khoản</title>\n" +
                     "</head>\n" +
                     "<body>\n" +
-                    "<div style=\"margin: 100px auto; width: 275px;\">\n" +
+                    "<div style=\"margin: 100px auto; width: 300px;\">\n" +
                     "    <a href=\"https://cuongnh2k.space/activate?cid=" + cid + "&code=" + code + "\" target=\"_blank\">\n" +
                     "        <button style=\" height: 50px;\n" +
                     "                        width: 100%;\n" +
                     "                        color: white;\n" +
                     "                        background-color: forestgreen;\n" +
                     "                        border-radius: 5px;\n" +
-                    "                        font-size: 17px;\n" +
+                    "                        font-size: 30px;\n" +
                     "                        cursor: pointer;\n" +
                     "                        border: none;\">\n" +
-                    "            Dùng web thì click vào đây nhé\n" +
+                    "            Kích hoạt tài khoản\n" +
                     "        </button>\n" +
                     "    </a>\n" +
-                    "    <div style=\"margin-top: 50px; cursor: pointer;\" onclick=\"myFunction1()\">\n" +
-                    "        <span id=\"copyText1\" style=\"font-size: 12px;\">\n" +
-                    "            id: " + cid + "\n" +
-                    "        </span>\n" +
-                    "    </div>\n" +
-                    "    <div style=\"margin-top: 50px;\n" +
-                    "            cursor: pointer;\"\n" +
-                    "         onclick=\"myFunction2()\">\n" +
-                    "        <span id=\"copyText2\" style=\"font-size: 12px;\">\n" +
-                    "           code: " + code + "\n" +
-                    "        </span>\n" +
-                    "    </div>\n" +
+                    "    <p style=\"margin-top: 50px;\">Mã kích hoạt:</p>\n" +
+                    "    <p style=\"margin-top: 20px;\">" + cid + "/" + code + "</p>\n" +
                     "</div>\n" +
                     "</body>\n" +
                     "</html>", "text/html; charset=UTF-8");
@@ -80,36 +70,67 @@ public class SendEmailUtil {
                     "    <title>Kích hoạt thiết bị</title>\n" +
                     "</head>\n" +
                     "<body>\n" +
-                    "<div style=\"margin: 100px auto; width: 275px;\">\n" +
+                    "<div style=\"margin: 100px auto; width: 300px;\">\n" +
                     "    <a href=\"https://cuongnh2k.space/activate?deviceId=" + deviceId + "&code=" + code + "\" target=\"_blank\">\n" +
                     "        <button style=\" height: 50px;\n" +
                     "                        width: 100%;\n" +
                     "                        color: white;\n" +
                     "                        background-color: forestgreen;\n" +
                     "                        border-radius: 5px;\n" +
-                    "                        font-size: 17px;\n" +
+                    "                        font-size: 30px;\n" +
                     "                        cursor: pointer;\n" +
                     "                        border: none;\">\n" +
-                    "            Dùng web thì click vào đây nhé\n" +
+                    "            Kích hoạt thiết bị\n" +
                     "        </button>\n" +
                     "    </a>\n" +
-                    "    <div style=\"margin-top: 50px; cursor: pointer;\" onclick=\"myFunction1()\">\n" +
-                    "        <span id=\"copyText1\" style=\"font-size: 12px;\">\n" +
-                    "            id: " + deviceId + "\n" +
-                    "        </span>\n" +
-                    "    </div>\n" +
-                    "    <div style=\"margin-top: 50px;\n" +
-                    "            cursor: pointer;\"\n" +
-                    "         onclick=\"myFunction2()\">\n" +
-                    "        <span id=\"copyText2\" style=\"font-size: 12px;\">\n" +
-                    "           code: " + code + "\n" +
-                    "        </span>\n" +
-                    "    </div>\n" +
+                    "    <p style=\"margin-top: 50px;\">Mã kích hoạt:</p>\n" +
+                    "    <p style=\"margin-top: 20px;\">" + deviceId + "/" + code + "</p>\n" +
                     "</div>\n" +
                     "</body>\n" +
                     "</html>", "text/html; charset=UTF-8");
             helper.setTo(to);
             helper.setSubject("Kích hoạt thiết bị");
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Async
+    public void confirmResetPassword(String to, String cid, String code) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
+            message.setContent("<!DOCTYPE html>\n" +
+                    "<html lang=\"vi-VN\">\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <meta name=\"viewport\"\n" +
+                    "          content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\">\n" +
+                    "    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n" +
+                    "    <title>Xác nhận thiết lập lại mật khẩu</title>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "<div style=\"margin: 100px auto; width: 300px;\">\n" +
+                    "    <a href=\"https://cuongnh2k.space/confirm?cid=" + cid + "&code=" + code + "\" target=\"_blank\">\n" +
+                    "        <button style=\" height: 50px;\n" +
+                    "                        width: 100%;\n" +
+                    "                        color: white;\n" +
+                    "                        background-color: forestgreen;\n" +
+                    "                        border-radius: 5px;\n" +
+                    "                        font-size: 20px;\n" +
+                    "                        cursor: pointer;\n" +
+                    "                        border: none;\">\n" +
+                    "            Xác nhận thiết lập lại mật khẩu\n" +
+                    "        </button>\n" +
+                    "    </a>\n" +
+                    "    <p style=\"margin-top: 50px;\">Mã xác nhận:</p>\n" +
+                    "    <p style=\"margin-top: 20px;\">" + cid + "/" + code + "</p>\n" +
+                    "</div>\n" +
+                    "</body>\n" +
+                    "</html>", "text/html; charset=UTF-8");
+            helper.setTo(to);
+            helper.setSubject("Xác nhận thiết lập lại mật khẩu");
             javaMailSender.send(message);
         } catch (Exception e) {
             log.error(e.getMessage());
