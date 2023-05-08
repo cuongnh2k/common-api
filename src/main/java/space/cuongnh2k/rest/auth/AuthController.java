@@ -18,7 +18,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponseDto> login(@RequestBody @Valid LoginReq req) {
-        return BaseResponseDto.success("Login successful", authService.login(req));
+        return authService.login(req);
     }
 
     @Privileges("")

@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import space.cuongnh2k.core.enums.IsActivated;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class AccountRss {
@@ -15,4 +17,5 @@ public class AccountRss {
     private String firstName;
     private String lastName;
     private String avatarFileId;
+    private LocalDateTime updatedDate;
 }

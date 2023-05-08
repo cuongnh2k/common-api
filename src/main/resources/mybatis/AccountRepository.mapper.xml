@@ -12,7 +12,8 @@
         IS_ACTIVATED,
         FIRST_NAME,
         LAST_NAME,
-        AVATAR_FILE_ID
+        AVATAR_FILE_ID,
+        UPDATED_DATE
         FROM ACCOUNT
         <where>
             IS_DELETED = 'NO'
@@ -50,6 +51,7 @@
             <if test="lastName != null">LAST_NAME = #{lastName},</if>
             <if test="avatarFileId != null">AVATAR_FILE_ID = #{avatarFileId},</if>
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
+            <if test="activationCodeUseUpdate != null">ACTIVATION_CODE = #{activationCodeUseUpdate},</if>
         </set>
         <where>
             IS_DELETED = 'NO'
