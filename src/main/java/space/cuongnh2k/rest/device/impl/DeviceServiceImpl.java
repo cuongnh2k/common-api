@@ -1,8 +1,10 @@
 package space.cuongnh2k.rest.device.impl;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
@@ -12,10 +14,9 @@ import space.cuongnh2k.rest.device.DeviceRepository;
 import space.cuongnh2k.rest.device.DeviceService;
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
 import space.cuongnh2k.rest.device.dto.DeviceRes;
-import space.cuongnh2k.rest.device.query.DeleteDevicePrt;
-import space.cuongnh2k.rest.device.query.GetDevicePrt;
-import space.cuongnh2k.rest.device.query.UpdateDevicePrt;
+import space.cuongnh2k.rest.device.query.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,11 +29,25 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public void activeDevice(ActiveDeviceReq req) {
-        UpdateDevicePrt prt = new UpdateDevicePrt();
-        BeanCopyUtil.copyProperties(prt, req);
-        prt.setIsActivated(IsActivated.YES);
-        prt.setActivationCode(req.getActivationCode());
-        if (deviceRepository.updateDevice(prt) != 1) {
+        List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
+                .id(req.getId())
+                .build());
+        if (CollectionUtils.isEmpty(listDeviceRss)) {
+            throw new BusinessLogicException();
+        }
+        ActivationCodePrt activationCodePrt = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), ActivationCodePrt.class);
+        if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
+                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+            throw new BusinessLogicException();
+        }
+        if (!activationCodePrt.getDevice().getCode().equals(req.getActivationCode())) {
+            throw new BusinessLogicException();
+        }
+
+        if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
+                .id(listDeviceRss.get(0).getId())
+                .isActivated(IsActivated.YES)
+                .build()) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0008);
         }
     }

@@ -24,7 +24,7 @@ public class AuthController {
     @Privileges("")
     @PatchMapping("refresh-token")
     public ResponseEntity<BaseResponseDto> refreshToken() {
-        return BaseResponseDto.success("Refresh token successful", authService.refreshToken());
+        return BaseResponseDto.success(authService.refreshToken());
     }
 
     @Privileges("")

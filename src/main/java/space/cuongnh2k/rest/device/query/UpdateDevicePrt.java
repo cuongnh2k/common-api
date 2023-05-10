@@ -13,6 +13,5 @@ public class UpdateDevicePrt {
     private String accessToken;
     private String refreshToken;
     private String activationCode;
-    private String activationCodeUpdate;
     private IsActivated isActivated;
 }

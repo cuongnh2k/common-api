@@ -20,9 +20,9 @@ public class DeviceController {
     private final DeviceService deviceService;
 
     @PatchMapping("/active")
-    public ResponseEntity<BaseResponseDto> activeAccount(@RequestBody @Valid ActiveDeviceReq req) {
+    public ResponseEntity<BaseResponseDto> activeDevice(@RequestBody @Valid ActiveDeviceReq req) {
         deviceService.activeDevice(req);
-        return BaseResponseDto.success("Active account successful");
+        return BaseResponseDto.success("Kích hoạt thiết bị thành công");
     }
 
     @Privileges("")
@@ -30,12 +30,12 @@ public class DeviceController {
     public ResponseEntity<BaseResponseDto> logout(@RequestParam(defaultValue = "false") Boolean isLogoutAll,
                                                   @RequestBody @UUID List<String> ids) {
         deviceService.logout(isLogoutAll, ids);
-        return BaseResponseDto.success("Logout successful");
+        return BaseResponseDto.success("Đăng xuất thành công");
     }
 
     @Privileges("")
     @GetMapping
     public ResponseEntity<BaseResponseDto> getListDevice() {
-        return BaseResponseDto.success("Get data successful", deviceService.getListDevice());
+        return BaseResponseDto.success(deviceService.getListDevice());
     }
 }

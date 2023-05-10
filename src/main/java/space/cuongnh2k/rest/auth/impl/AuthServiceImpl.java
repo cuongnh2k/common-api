@@ -1,5 +1,6 @@
 package space.cuongnh2k.rest.auth.impl;
 
+import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +19,15 @@ import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
-import space.cuongnh2k.rest.account.query.AccountRss;
-import space.cuongnh2k.rest.account.query.GetAccountPrt;
-import space.cuongnh2k.rest.account.query.UpdateAccountPrt;
+import space.cuongnh2k.rest.account.query.ActivationCodePrt;
+import space.cuongnh2k.rest.account.query.*;
 import space.cuongnh2k.rest.auth.AuthService;
 import space.cuongnh2k.rest.auth.dto.AccountRes;
 import space.cuongnh2k.rest.auth.dto.LoginReq;
 import space.cuongnh2k.rest.auth.dto.LoginRes;
 import space.cuongnh2k.rest.device.DeviceRepository;
 import space.cuongnh2k.rest.device.dto.RefreshTokenRes;
-import space.cuongnh2k.rest.device.query.CreateDevicePrt;
-import space.cuongnh2k.rest.device.query.DeviceRss;
-import space.cuongnh2k.rest.device.query.GetDevicePrt;
-import space.cuongnh2k.rest.device.query.UpdateDevicePrt;
+import space.cuongnh2k.rest.device.query.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -63,16 +60,22 @@ public class AuthServiceImpl implements AuthService {
 
         String activationCode = UUID.randomUUID().toString();
         if (listAccountRss.get(0).getIsActivated() == IsActivated.NO) {
-            if (listAccountRss.get(0).getUpdatedDate().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+
+            ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
+            if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
+                    .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+
+                activationCodePrt.setAccount(AccountActivationPrt.builder()
+                        .code(activationCode)
+                        .createdDate(LocalDateTime.now().toString())
+                        .build());
                 if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                         .id(listAccountRss.get(0).getId())
-                        .activationCodeUseUpdate(activationCode)
+                        .activationCode(new Gson().toJson(activationCodePrt))
                         .build()) != 1) {
                     throw new BusinessLogicException();
                 }
-                sendEmailUtil.activateAccount(listAccountRss.get(0).getEmail(),
-                        listAccountRss.get(0).getId(),
-                        activationCode);
+                sendEmailUtil.activateAccount(listAccountRss.get(0).getEmail(), listAccountRss.get(0).getId(), activationCode);
             }
             return BaseResponseDto.error(BusinessLogicEnum.BUSINESS_LOGIC_0006.getMessage(),
                     BusinessLogicEnum.BUSINESS_LOGIC_0006.getErrorCode());
@@ -93,7 +96,12 @@ public class AuthServiceImpl implements AuthService {
                     .userAgent(request.getHeader(USER_AGENT).length() > 255
                             ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
                             : request.getHeader(USER_AGENT))
-                    .activationCode(activationCode)
+                    .activationCode(new Gson().toJson(space.cuongnh2k.rest.device.query.ActivationCodePrt.builder()
+                            .device(DeviceActivationPrt.builder()
+                                    .code(activationCode)
+                                    .createdDate(LocalDateTime.now().toString())
+                                    .build())
+                            .build()))
                     .build()) != 1) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
             }
@@ -106,12 +114,21 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(loginRes.getRefreshToken())
                     .build();
             if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
-                if (listDeviceRss.get(0).getUpdatedDate().toLocalDateTime().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                space.cuongnh2k.rest.device.query.ActivationCodePrt activationCodePrt
+                        = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), space.cuongnh2k.rest.device.query.ActivationCodePrt.class);
+                if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
+                        .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+
+                    activationCodePrt.setDevice(DeviceActivationPrt.builder()
+                            .code(activationCode)
+                            .createdDate(LocalDateTime.now().toString())
+                            .build());
+
                     devicePrt = UpdateDevicePrt.builder()
                             .id(listDeviceRss.get(0).getId())
                             .accessToken(loginRes.getAccessToken())
                             .refreshToken(loginRes.getRefreshToken())
-                            .activationCodeUpdate(activationCode)
+                            .activationCode(new Gson().toJson(activationCodePrt))
                             .build();
                     sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(),
                             listDeviceRss.get(0).getId(),

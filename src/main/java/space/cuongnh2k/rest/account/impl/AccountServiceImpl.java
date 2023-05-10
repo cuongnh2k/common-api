@@ -74,16 +74,23 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void activeAccount(ActiveAccountReq req) {
-        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(req.getId()).build());
-        if (CollectionUtils.isEmpty(rss)) {
+        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+                .id(req.getId())
+                .build());
+        if (CollectionUtils.isEmpty(listAccountRss)) {
             throw new BusinessLogicException();
         }
-        if (!new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class).getAccount().getCode()
-                .equals(req.getActivationCode())) {
+
+        ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
+        if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
+                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+            throw new BusinessLogicException();
+        }
+        if (!activationCodePrt.getAccount().getCode().equals(req.getActivationCode())) {
             throw new BusinessLogicException();
         }
         if (accountRepository.updateAccount(UpdateAccountPrt.builder()
-                .id(req.getId())
+                .id(listAccountRss.get(0).getId())
                 .isActivated(IsActivated.YES)
                 .build()) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
@@ -117,40 +124,56 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void confirmResetPassword(String id) {
-        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
                 .id(id)
                 .build());
-        if (CollectionUtils.isEmpty(listAccountRss)) {
+        if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException();
         }
-        if (listAccountRss.get(0).getUpdatedDate().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+        ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
+
+        if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
+                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+
             String code = UUID.randomUUID().toString();
+            activationCodePrt.setResetPassword(ResetPasswordActivationPrt.builder()
+                    .code(code)
+                    .createdDate(LocalDateTime.now().toString())
+                    .build());
+
             if (accountRepository.updateAccount(UpdateAccountPrt.builder()
-                    .id(listAccountRss.get(0).getId())
-                    .activationCodeUseUpdate(code)
+                    .id(rss.get(0).getId())
+                    .activationCode(new Gson().toJson(activationCodePrt))
                     .build()) != 1) {
                 throw new BusinessLogicException();
             }
-            sendEmailUtil.confirmResetPassword(listAccountRss.get(0).getEmail(), listAccountRss.get(0).getId(), code);
+            sendEmailUtil.confirmResetPassword(rss.get(0).getEmail(), rss.get(0).getId(), code);
         }
     }
 
     @Override
     public Object getNewPassword(GetNewPasswordReq req) {
-        List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
                 .id(req.getId())
                 .build());
-        if (CollectionUtils.isEmpty(listAccountRss)) {
+        if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException();
         }
-        if (listAccountRss.get(0).getUpdatedDate().plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+
+        ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
+        if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
+                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException();
         }
+
+        if (!activationCodePrt.getResetPassword().getCode().equals(req.getActivationCode())) {
+            throw new BusinessLogicException();
+        }
+
         String password = UUID.randomUUID().toString();
         if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                 .password(passwordEncoder.encode(password))
                 .id(req.getId())
-                .activationCode(req.getActivationCode())
                 .build()) != 1) {
             throw new BusinessLogicException();
         }
