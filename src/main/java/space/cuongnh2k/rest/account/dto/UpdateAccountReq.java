@@ -14,6 +14,9 @@ public class UpdateAccountReq {
     @Password
     private String password;
 
+    @Password
+    private String passwordOld;
+
     @MaxLength(value = 50)
     private String firstName;
 

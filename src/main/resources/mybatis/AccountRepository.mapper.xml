@@ -51,12 +51,11 @@
             <if test="lastName != null">LAST_NAME = #{lastName},</if>
             <if test="avatarFileId != null">AVATAR_FILE_ID = #{avatarFileId},</if>
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
-            <if test="activationCodeUseUpdate != null">ACTIVATION_CODE = #{activationCodeUseUpdate},</if>
+            <if test="activationCode != null">ACTIVATION_CODE = #{activationCode},</if>
         </set>
         <where>
             IS_DELETED = 'NO'
             <if test="id != null">AND ID = #{id}</if>
-            <if test="activationCode != null">AND ACTIVATION_CODE = #{activationCode}</if>
             <if test="isActivated != null">AND IS_ACTIVATED = 'NO'</if>
             <if test="password != null or firstName != null or lastName != null or avatarFileId != null">
                 AND IS_ACTIVATED = 'YES'

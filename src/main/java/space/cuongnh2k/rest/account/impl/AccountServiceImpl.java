@@ -1,6 +1,11 @@
 package space.cuongnh2k.rest.account.impl;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,16 +19,13 @@ import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.AccountService;
 import space.cuongnh2k.rest.account.dto.*;
-import space.cuongnh2k.rest.account.query.AccountRss;
-import space.cuongnh2k.rest.account.query.CreateAccountPrt;
-import space.cuongnh2k.rest.account.query.GetAccountPrt;
-import space.cuongnh2k.rest.account.query.UpdateAccountPrt;
+import space.cuongnh2k.rest.account.query.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-
+@Log4j2
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final SendEmailUtil sendEmailUtil;
     private final AuthContext authContext;
+    private final DaoAuthenticationProvider daoAuthenticationProvider;
 
     @Override
     public SearchAccountRes searchAccount(String email) {
@@ -49,31 +52,64 @@ public class AccountServiceImpl implements AccountService {
         CreateAccountPrt prt = new CreateAccountPrt();
         BeanCopyUtil.copyProperties(prt, req);
         prt.setId(UUID.randomUUID().toString());
-        String activationCode = UUID.randomUUID().toString();
-        prt.setActivationCode(activationCode);
+
+        String code = UUID.randomUUID().toString();
+        ActivationCodePrt activationCodePrt = ActivationCodePrt.builder()
+                .account(AccountActivationPrt.builder()
+                        .code(code)
+                        .createdDate(LocalDateTime.now().toString())
+                        .build())
+                .resetPassword(ResetPasswordActivationPrt.builder()
+                        .code(code)
+                        .createdDate(LocalDateTime.now().toString())
+                        .build())
+                .build();
+        prt.setActivationCode(new Gson().toJson(activationCodePrt));
         prt.setPassword(passwordEncoder.encode(prt.getPassword()));
         if (accountRepository.createAccount(prt) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
-        sendEmailUtil.activateAccount(prt.getEmail(), prt.getId(), activationCode);
+        sendEmailUtil.activateAccount(prt.getEmail(), prt.getId(), code);
     }
 
     @Override
     public void activeAccount(ActiveAccountReq req) {
-        UpdateAccountPrt prt = new UpdateAccountPrt();
-        BeanCopyUtil.copyProperties(prt, req);
-        prt.setIsActivated(IsActivated.YES);
-        if (accountRepository.updateAccount(prt) != 1) {
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(req.getId()).build());
+        if (CollectionUtils.isEmpty(rss)) {
+            throw new BusinessLogicException();
+        }
+        if (!new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class).getAccount().getCode()
+                .equals(req.getActivationCode())) {
+            throw new BusinessLogicException();
+        }
+        if (accountRepository.updateAccount(UpdateAccountPrt.builder()
+                .id(req.getId())
+                .isActivated(IsActivated.YES)
+                .build()) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
         }
     }
 
     @Override
     public void updateAccount(UpdateAccountReq req) {
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(authContext.getAccountId()).build());
+        if (CollectionUtils.isEmpty(rss)) {
+            throw new BusinessLogicException();
+        }
+
         UpdateAccountPrt prt = new UpdateAccountPrt();
         BeanCopyUtil.copyProperties(prt, req);
+
+        if (prt.getPassword() != null) {
+            try {
+                daoAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(rss.get(0).getEmail(), req.getPasswordOld()));
+            } catch (BadCredentialsException e) {
+                throw new BusinessLogicException();
+            }
+            prt.setPassword(passwordEncoder.encode(prt.getPassword()));
+        }
+
         prt.setId(authContext.getAccountId());
-        prt.setPassword(passwordEncoder.encode(prt.getPassword()));
         if (accountRepository.updateAccount(prt) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0011);
         }
