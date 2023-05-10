@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             daoAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
         } catch (BadCredentialsException e) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0006);
         }
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
                 .email(req.getEmail())
@@ -73,12 +73,12 @@ public class AuthServiceImpl implements AuthService {
                         .id(listAccountRss.get(0).getId())
                         .activationCode(new Gson().toJson(activationCodePrt))
                         .build()) != 1) {
-                    throw new BusinessLogicException();
+                    throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
                 }
                 sendEmailUtil.activateAccount(listAccountRss.get(0).getEmail(), listAccountRss.get(0).getId(), activationCode);
             }
-            return BaseResponseDto.error(BusinessLogicEnum.BUSINESS_LOGIC_0006.getMessage(),
-                    BusinessLogicEnum.BUSINESS_LOGIC_0006.getErrorCode());
+            return BaseResponseDto.error(BusinessLogicEnum.BUSINESS_LOGIC_0008.getMessage(),
+                    BusinessLogicEnum.BUSINESS_LOGIC_0008.getErrorCode());
         }
         List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
                 .accountId(listAccountRss.get(0).getId())
@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
                                     .build())
                             .build()))
                     .build()) != 1) {
-                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
             }
             sendEmailUtil.activateDevice(listAccountRss.get(0).getEmail(), deviceId, activationCode);
         } else {
@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
                 }
             }
             if (deviceRepository.updateDevice(devicePrt) != 1) {
-                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0005);
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
             }
         }
         return BaseResponseDto.success(loginRes);
@@ -152,7 +152,7 @@ public class AuthServiceImpl implements AuthService {
                 .id(authContext.getDeviceId())
                 .accessToken(refreshTokenRes.getAccessToken())
                 .build()) != 1) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0009);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
         }
         return refreshTokenRes;
     }

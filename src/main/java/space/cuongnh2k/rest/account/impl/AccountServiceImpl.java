@@ -40,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
     public SearchAccountRes searchAccount(String email) {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().email(email).build());
         if (CollectionUtils.isEmpty(rss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
         SearchAccountRes res = new SearchAccountRes();
         BeanCopyUtil.copyProperties(res, rss.get(0));
@@ -67,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
         prt.setActivationCode(new Gson().toJson(activationCodePrt));
         prt.setPassword(passwordEncoder.encode(prt.getPassword()));
         if (accountRepository.createAccount(prt) != 1) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0002);
         }
         sendEmailUtil.activateAccount(prt.getEmail(), prt.getId(), code);
     }
@@ -78,22 +78,22 @@ public class AccountServiceImpl implements AccountService {
                 .id(req.getId())
                 .build());
         if (CollectionUtils.isEmpty(listAccountRss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
 
         ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
         if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
                 .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
         if (!activationCodePrt.getAccount().getCode().equals(req.getActivationCode())) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
         if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                 .id(listAccountRss.get(0).getId())
                 .isActivated(IsActivated.YES)
                 .build()) != 1) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0005);
         }
     }
 
@@ -101,7 +101,7 @@ public class AccountServiceImpl implements AccountService {
     public void updateAccount(UpdateAccountReq req) {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(authContext.getAccountId()).build());
         if (CollectionUtils.isEmpty(rss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
 
         UpdateAccountPrt prt = new UpdateAccountPrt();
@@ -111,14 +111,14 @@ public class AccountServiceImpl implements AccountService {
             try {
                 daoAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(rss.get(0).getEmail(), req.getPasswordOld()));
             } catch (BadCredentialsException e) {
-                throw new BusinessLogicException();
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0006);
             }
             prt.setPassword(passwordEncoder.encode(prt.getPassword()));
         }
 
         prt.setId(authContext.getAccountId());
         if (accountRepository.updateAccount(prt) != 1) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0011);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
         }
     }
 
@@ -128,7 +128,7 @@ public class AccountServiceImpl implements AccountService {
                 .id(id)
                 .build());
         if (CollectionUtils.isEmpty(rss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
         ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
 
@@ -145,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
                     .id(rss.get(0).getId())
                     .activationCode(new Gson().toJson(activationCodePrt))
                     .build()) != 1) {
-                throw new BusinessLogicException();
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
             }
             sendEmailUtil.confirmResetPassword(rss.get(0).getEmail(), rss.get(0).getId(), code);
         }
@@ -157,17 +157,17 @@ public class AccountServiceImpl implements AccountService {
                 .id(req.getId())
                 .build());
         if (CollectionUtils.isEmpty(rss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
 
         ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
         if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
                 .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
 
         if (!activationCodePrt.getResetPassword().getCode().equals(req.getActivationCode())) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
 
         String password = UUID.randomUUID().toString();
@@ -175,7 +175,7 @@ public class AccountServiceImpl implements AccountService {
                 .password(passwordEncoder.encode(password))
                 .id(req.getId())
                 .build()) != 1) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0007);
         }
         return password;
     }

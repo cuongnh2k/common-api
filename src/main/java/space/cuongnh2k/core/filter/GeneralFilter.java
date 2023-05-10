@@ -81,7 +81,8 @@ public class GeneralFilter extends OncePerRequestFilter {
                                     messageSource.getMessage("UnauthorizedExceptionAdvice", null, LocaleContextHolder.getLocale())))
                             .data(listError)
                             .build());
+        } else {
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
     }
 }
