@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import space.cuongnh2k.core.context.AuthContext;
+import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.rest.device.DeviceRepository;
 import space.cuongnh2k.rest.device.query.DeviceRss;
@@ -41,9 +42,9 @@ public class DeviceFilter {
 
         List<DeviceRss> listDeviceRss = deviceRepository.getDevice(devicePrt);
         if (CollectionUtils.isEmpty(listDeviceRss)) {
-            return "Device is logged out";
+            return BusinessLogicEnum.BUSINESS_LOGIC_0021.getMessage();
         } else if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
-            return "Device is not activated";
+            return BusinessLogicEnum.BUSINESS_LOGIC_0022.getMessage();
         }
         return null;
     }

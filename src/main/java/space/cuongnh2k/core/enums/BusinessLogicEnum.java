@@ -25,7 +25,11 @@ public enum BusinessLogicEnum {
     BUSINESS_LOGIC_0017(-17, "Tải file lên thất bại"),
     BUSINESS_LOGIC_0018(-18, "Xóa file thất bại"),
     BUSINESS_LOGIC_0019(-19, "Không tìm thấy file"),
-    BUSINESS_LOGIC_0020(-20, "Tải xuống file thất bại");
+    BUSINESS_LOGIC_0020(-20, "Tải xuống file thất bại"),
+    BUSINESS_LOGIC_0021(-21, "Thiết bị đã đăng xuất"),
+    BUSINESS_LOGIC_0022(-22, "Thiết bị chưa kích hoạt"),
+    BUSINESS_LOGIC_0023(-23, "Yêu cầu refresh token"),
+    BUSINESS_LOGIC_0024(-24, "Yêu cầu access token");
 
     private final Integer errorCode;
     private final String message;
