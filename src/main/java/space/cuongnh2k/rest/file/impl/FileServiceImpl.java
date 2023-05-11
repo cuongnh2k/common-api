@@ -18,6 +18,7 @@ import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.AccessEnum;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
+import space.cuongnh2k.core.exceptions.ForbiddenException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.file.FileRepository;
 import space.cuongnh2k.rest.file.FileService;
@@ -54,7 +55,7 @@ public class FileServiceImpl implements FileService {
             assert originalFilename != null;
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
             if (fileExtension.equals("")) {
-                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0012);
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0016);
             }
             String id = UUID.randomUUID().toString();
             listPrt.add(CreateFilePrt.builder()
@@ -72,7 +73,7 @@ public class FileServiceImpl implements FileService {
         }
         // insert
         if (fileRepository.createFile(listPrt) != listPrt.size()) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0013);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0017);
         }
         listPrt.forEach(o -> {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -85,7 +86,7 @@ public class FileServiceImpl implements FileService {
                         metadata);
             } catch (IOException e) {
                 log.error(e);
-                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0013);
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0017);
             }
         });
         return listPrt.stream()
@@ -107,7 +108,7 @@ public class FileServiceImpl implements FileService {
                 .ids(ids)
                 .ownerId(authContext.getAccountId())
                 .build()) != ids.size()) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0014);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0018);
         }
         try {
             listFileRss.forEach(o ->
@@ -117,7 +118,7 @@ public class FileServiceImpl implements FileService {
             );
         } catch (Exception e) {
             log.error(e);
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0014);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0018);
         }
     }
 
@@ -128,10 +129,10 @@ public class FileServiceImpl implements FileService {
                 .id(id)
                 .build());
         if (CollectionUtils.isEmpty(listFileRss)) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0019);
         }
         if (listFileRss.get(0).getAccess() == AccessEnum.PRIVATE && authContext.getAccount() == null) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0016);
+            throw new ForbiddenException();
         }
         try {
             S3Object s3object = amazonS3.getObject(
@@ -143,7 +144,7 @@ public class FileServiceImpl implements FileService {
                     .body(new InputStreamResource(s3object.getObjectContent()).getContentAsByteArray());
         } catch (Exception e) {
             log.error(e);
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0016);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0020);
         }
     }
 }

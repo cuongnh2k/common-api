@@ -27,7 +27,7 @@ public class UserDetailServiceUtil implements UserDetailsService {
                 .email(email)
                 .build());
         if (CollectionUtils.isEmpty(listAccountRss)) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0006);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
         return new User(listAccountRss.get(0).getEmail(), listAccountRss.get(0).getPassword(), new ArrayList<>());
     }

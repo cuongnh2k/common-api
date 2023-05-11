@@ -23,14 +23,14 @@ public class FileController {
     @PostMapping
     public ResponseEntity<BaseResponseDto> uploadFile(@RequestParam(defaultValue = "PRIVATE") AccessEnum access,
                                                       @RequestParam List<MultipartFile> files) {
-        return BaseResponseDto.success("Upload file successful", fileService.uploadFile(access, files));
+        return BaseResponseDto.success(fileService.uploadFile(access, files));
     }
 
     @Privileges("")
     @PostMapping("/delete")
     public ResponseEntity<BaseResponseDto> deleteFile(@RequestBody @UUID List<String> ids) {
         fileService.deleteFile(ids);
-        return BaseResponseDto.success("Deleted file successful");
+        return BaseResponseDto.success("Xóa file thành công");
     }
 
     @Privileges("OPTIONAL")

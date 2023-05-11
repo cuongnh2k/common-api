@@ -33,22 +33,22 @@ public class DeviceServiceImpl implements DeviceService {
                 .id(req.getId())
                 .build());
         if (CollectionUtils.isEmpty(listDeviceRss)) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
         ActivationCodePrt activationCodePrt = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), ActivationCodePrt.class);
         if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
                 .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
         if (!activationCodePrt.getDevice().getCode().equals(req.getActivationCode())) {
-            throw new BusinessLogicException();
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
 
         if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
                 .id(listDeviceRss.get(0).getId())
                 .isActivated(IsActivated.YES)
                 .build()) != 1) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0008);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0014);
         }
     }
 
@@ -58,7 +58,7 @@ public class DeviceServiceImpl implements DeviceService {
             if (deviceRepository.deleteDevice(DeleteDevicePrt.builder()
                     .accountId(authContext.getAccountId())
                     .build()) == 0) {
-                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
             }
             return;
         }
@@ -66,7 +66,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .ids(ids)
                 .accountId(authContext.getAccountId())
                 .build()) != ids.size()) {
-            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
+            throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
         }
     }
 
