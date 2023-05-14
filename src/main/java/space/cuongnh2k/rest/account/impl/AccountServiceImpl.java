@@ -43,6 +43,7 @@ public class AccountServiceImpl implements AccountService {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
                 .emails(req.getEmails())
                 .ids(req.getIds())
+                .isActivated(IsActivated.YES)
                 .build());
         if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
