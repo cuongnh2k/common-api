@@ -5,15 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import space.cuongnh2k.core.annotation.Email;
-import space.cuongnh2k.core.annotation.Length;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
-import space.cuongnh2k.rest.account.dto.ActiveAccountReq;
-import space.cuongnh2k.rest.account.dto.CreateAccountReq;
-import space.cuongnh2k.rest.account.dto.GetNewPasswordReq;
-import space.cuongnh2k.rest.account.dto.UpdateAccountReq;
+import space.cuongnh2k.rest.account.dto.*;
 
 @Validated
 @RestController
@@ -23,10 +18,9 @@ public class AccountController {
     private final AccountService accountService;
 
     @Privileges("")
-    @GetMapping
-    public ResponseEntity<BaseResponseDto> searchAccount(@RequestParam(required = false) @Email String email,
-                                                         @RequestParam(required = false) @Length(36) String id) {
-        return BaseResponseDto.success(accountService.searchAccount(email, id));
+    @PostMapping("/extract")
+    public ResponseEntity<BaseResponseDto> extractAccount(@RequestBody @Valid ExtractAccountReq req) {
+        return BaseResponseDto.success(accountService.extractAccount(req));
     }
 
     @PostMapping

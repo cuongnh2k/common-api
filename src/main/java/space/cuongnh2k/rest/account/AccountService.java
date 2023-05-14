@@ -2,8 +2,10 @@ package space.cuongnh2k.rest.account;
 
 import space.cuongnh2k.rest.account.dto.*;
 
+import java.util.List;
+
 public interface AccountService {
-    SearchAccountRes searchAccount(String email, String id);
+    List<ExtractAccountRes> extractAccount(ExtractAccountReq req);
 
     void createAccount(CreateAccountReq req);
 

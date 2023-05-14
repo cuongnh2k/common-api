@@ -4,10 +4,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
 public class GetAccountPrt {
-    private String email;
-    private String id;
+    private List<String> emails;
+    private List<String> ids;
 }

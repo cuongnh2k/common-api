@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchAccountRes {
+public class ExtractAccountRes {
     private String id;
     private String firstName;
     private String lastName;

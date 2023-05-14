@@ -14,6 +14,7 @@ import space.cuongnh2k.rest.account.query.AccountRss;
 import space.cuongnh2k.rest.account.query.GetAccountPrt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -24,7 +25,7 @@ public class UserDetailServiceUtil implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                .email(email)
+                .emails(Collections.singletonList(email))
                 .build());
         if (CollectionUtils.isEmpty(listAccountRss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);

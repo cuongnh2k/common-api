@@ -30,6 +30,7 @@ import space.cuongnh2k.rest.device.dto.RefreshTokenRes;
 import space.cuongnh2k.rest.device.query.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0010);
         }
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                .email(req.getEmail())
+                .emails(Collections.singletonList(req.getEmail()))
                 .build());
 
         String activationCode = UUID.randomUUID().toString();
@@ -145,7 +146,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public RefreshTokenRes refreshToken() {
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                .id(authContext.getAccountId())
+                .ids(Collections.singletonList(authContext.getAccountId()))
                 .build());
         RefreshTokenRes refreshTokenRes = jwtCrypto.encode(listAccountRss.get(0), authContext.getBearer(), authContext.getDeviceId());
         if (deviceRepository.updateDevice(UpdateDevicePrt.builder()
@@ -160,7 +161,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AccountRes getDetailAccount() {
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                .id(authContext.getAccountId())
+                .ids(Collections.singletonList(authContext.getAccountId()))
                 .build());
         if (CollectionUtils.isEmpty(listAccountRss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);

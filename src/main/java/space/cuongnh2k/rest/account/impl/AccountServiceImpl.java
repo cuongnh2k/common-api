@@ -22,8 +22,10 @@ import space.cuongnh2k.rest.account.dto.*;
 import space.cuongnh2k.rest.account.query.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -37,17 +39,21 @@ public class AccountServiceImpl implements AccountService {
     private final DaoAuthenticationProvider daoAuthenticationProvider;
 
     @Override
-    public SearchAccountRes searchAccount(String email, String id) {
+    public List<ExtractAccountRes> extractAccount(ExtractAccountReq req) {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
-                .email(email)
-                .id(id)
+                .emails(req.getEmails())
+                .ids(req.getIds())
                 .build());
-        if (CollectionUtils.isEmpty(rss) || rss.size() > 1) {
+        if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
-        SearchAccountRes res = new SearchAccountRes();
-        BeanCopyUtil.copyProperties(res, rss.get(0));
-        return res;
+        return rss.stream()
+                .map(o -> {
+                    ExtractAccountRes res = new ExtractAccountRes();
+                    BeanCopyUtil.copyProperties(res, o);
+                    return res;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -78,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void activeAccount(ActiveAccountReq req) {
         List<AccountRss> listAccountRss = accountRepository.getAccount(GetAccountPrt.builder()
-                .id(req.getId())
+                .ids(Collections.singletonList(req.getId()))
                 .build());
         if (CollectionUtils.isEmpty(listAccountRss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
@@ -102,7 +108,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void updateAccount(UpdateAccountReq req) {
-        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().id(authContext.getAccountId()).build());
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
+                .ids(Collections.singletonList(authContext.getAccountId()))
+                .build());
         if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
@@ -128,7 +136,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void confirmResetPassword(String id) {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
-                .id(id)
+                .ids(Collections.singletonList(id))
                 .build());
         if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
@@ -157,7 +165,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Object getNewPassword(GetNewPasswordReq req) {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
-                .id(req.getId())
+                .ids(Collections.singletonList(req.getId()))
                 .build());
         if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
