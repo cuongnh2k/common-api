@@ -3,7 +3,7 @@ package space.cuongnh2k.rest.account;
 import space.cuongnh2k.rest.account.dto.*;
 
 public interface AccountService {
-    SearchAccountRes searchAccount(String id);
+    SearchAccountRes searchAccount(String email, String id);
 
     void createAccount(CreateAccountReq req);
 

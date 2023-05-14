@@ -17,10 +17,10 @@
         FROM ACCOUNT
         <where>
             IS_DELETED = 'NO'
-            <if test="email != null">
+            <if test="email != null and email != ''">
                 AND EMAIL = #{email}
             </if>
-            <if test="id != null">
+            <if test="id != null and id != ''">
                 AND ID = #{id}
             </if>
         </where>

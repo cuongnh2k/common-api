@@ -37,8 +37,11 @@ public class AccountServiceImpl implements AccountService {
     private final DaoAuthenticationProvider daoAuthenticationProvider;
 
     @Override
-    public SearchAccountRes searchAccount(String email) {
-        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder().email(email).build());
+    public SearchAccountRes searchAccount(String email, String id) {
+        List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
+                .email(email)
+                .id(id)
+                .build());
         if (CollectionUtils.isEmpty(rss)) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }

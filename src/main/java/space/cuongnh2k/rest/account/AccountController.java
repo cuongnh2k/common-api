@@ -22,9 +22,10 @@ public class AccountController {
     private final AccountService accountService;
 
     @Privileges("")
-    @GetMapping("/{email}")
-    public ResponseEntity<BaseResponseDto> searchAccount(@PathVariable @Email String email) {
-        return BaseResponseDto.success(accountService.searchAccount(email));
+    @GetMapping
+    public ResponseEntity<BaseResponseDto> searchAccount(@RequestParam @Email String email,
+                                                         @RequestParam @UUID String id) {
+        return BaseResponseDto.success(accountService.searchAccount(email, id));
     }
 
     @PostMapping
