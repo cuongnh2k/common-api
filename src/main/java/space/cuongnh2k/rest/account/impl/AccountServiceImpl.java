@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
                 .email(email)
                 .id(id)
                 .build());
-        if (CollectionUtils.isEmpty(rss)) {
+        if (CollectionUtils.isEmpty(rss) || rss.size() > 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
         SearchAccountRes res = new SearchAccountRes();

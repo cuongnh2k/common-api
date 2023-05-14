@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import space.cuongnh2k.core.annotation.Email;
+import space.cuongnh2k.core.annotation.Length;
 import space.cuongnh2k.core.annotation.Privileges;
 import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
@@ -23,8 +24,8 @@ public class AccountController {
 
     @Privileges("")
     @GetMapping
-    public ResponseEntity<BaseResponseDto> searchAccount(@RequestParam @Email String email,
-                                                         @RequestParam @UUID String id) {
+    public ResponseEntity<BaseResponseDto> searchAccount(@RequestParam(required = false) @Email String email,
+                                                         @RequestParam(required = false) @Length(36) String id) {
         return BaseResponseDto.success(accountService.searchAccount(email, id));
     }
 
