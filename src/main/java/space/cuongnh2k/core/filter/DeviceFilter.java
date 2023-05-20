@@ -29,14 +29,18 @@ public class DeviceFilter {
                     .id(authContext.getDeviceId())
                     .accountId(authContext.getAccountId())
                     .refreshToken(authContext.getBearer())
-                    .userAgent(request.getHeader(USER_AGENT))
+                    .userAgent(request.getHeader(USER_AGENT).length() > 255
+                            ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
+                            : request.getHeader(USER_AGENT))
                     .build();
         } else {
             devicePrt = GetDevicePrt.builder()
                     .id(authContext.getDeviceId())
                     .accountId(authContext.getAccountId())
                     .accessToken(authContext.getBearer())
-                    .userAgent(request.getHeader(USER_AGENT))
+                    .userAgent(request.getHeader(USER_AGENT).length() > 255
+                            ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
+                            : request.getHeader(USER_AGENT))
                     .build();
         }
 

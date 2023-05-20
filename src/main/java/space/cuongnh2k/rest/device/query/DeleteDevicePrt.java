@@ -10,4 +10,5 @@ import java.util.List;
 public class DeleteDevicePrt {
     private String accountId;
     private List<String> ids;
+    private String userAgent;
 }

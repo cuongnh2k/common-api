@@ -83,7 +83,9 @@ public class AuthServiceImpl implements AuthService {
         }
         List<DeviceRss> listDeviceRss = deviceRepository.getDevice(GetDevicePrt.builder()
                 .accountId(listAccountRss.get(0).getId())
-                .userAgent(request.getHeader(USER_AGENT))
+                .userAgent(request.getHeader(USER_AGENT).length() > 255
+                        ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
+                        : request.getHeader(USER_AGENT))
                 .build());
         LoginRes loginRes;
         if (CollectionUtils.isEmpty(listDeviceRss)) {

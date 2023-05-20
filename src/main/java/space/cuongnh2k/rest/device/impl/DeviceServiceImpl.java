@@ -1,6 +1,7 @@
 package space.cuongnh2k.rest.device.impl;
 
 import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +21,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpHeaders.USER_AGENT;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
     private final AuthContext authContext;
+    private final HttpServletRequest request;
 
     @Override
     public void activeDevice(ActiveDeviceReq req) {
@@ -62,8 +66,19 @@ public class DeviceServiceImpl implements DeviceService {
             }
             return;
         }
+        if (!CollectionUtils.isEmpty(ids)) {
+            if (deviceRepository.deleteDevice(DeleteDevicePrt.builder()
+                    .ids(ids)
+                    .accountId(authContext.getAccountId())
+                    .build()) != ids.size()) {
+                throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
+            }
+            return;
+        }
         if (deviceRepository.deleteDevice(DeleteDevicePrt.builder()
-                .ids(ids)
+                .userAgent(request.getHeader(USER_AGENT).length() > 255
+                        ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
+                        : request.getHeader(USER_AGENT))
                 .accountId(authContext.getAccountId())
                 .build()) != ids.size()) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);

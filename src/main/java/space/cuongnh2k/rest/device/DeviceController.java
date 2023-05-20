@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import space.cuongnh2k.core.annotation.Privileges;
-import space.cuongnh2k.core.annotation.UUID;
 import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.rest.device.dto.ActiveDeviceReq;
 
@@ -28,7 +27,7 @@ public class DeviceController {
     @Privileges("")
     @PostMapping
     public ResponseEntity<BaseResponseDto> logout(@RequestParam(defaultValue = "false") Boolean isLogoutAll,
-                                                  @RequestBody @UUID List<String> ids) {
+                                                  @RequestBody(required = false) List<String> ids) {
         deviceService.logout(isLogoutAll, ids);
         return BaseResponseDto.success("Đăng xuất thành công");
     }
