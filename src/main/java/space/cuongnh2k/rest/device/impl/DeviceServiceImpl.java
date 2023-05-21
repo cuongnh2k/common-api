@@ -80,7 +80,7 @@ public class DeviceServiceImpl implements DeviceService {
                         ? request.getHeader(USER_AGENT).substring(request.getHeader(USER_AGENT).length() - 255)
                         : request.getHeader(USER_AGENT))
                 .accountId(authContext.getAccountId())
-                .build()) != ids.size()) {
+                .build()) != 1) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0015);
         }
     }

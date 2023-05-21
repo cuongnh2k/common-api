@@ -27,7 +27,7 @@ public class DeviceController {
     @Privileges("")
     @PostMapping
     public ResponseEntity<BaseResponseDto> logout(@RequestParam(defaultValue = "false") Boolean isLogoutAll,
-                                                  @RequestBody(required = false) List<String> ids) {
+                                                  @RequestBody List<String> ids) {
         deviceService.logout(isLogoutAll, ids);
         return BaseResponseDto.success("Đăng xuất thành công");
     }

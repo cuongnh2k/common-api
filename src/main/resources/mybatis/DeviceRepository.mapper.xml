@@ -71,7 +71,7 @@
                 </foreach>
             </if>
             <if test="userAgent != null">
-                USER_AGENT = #{userAgent}
+                AND USER_AGENT = #{userAgent}
             </if>
         </where>
     </update>
