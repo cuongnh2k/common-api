@@ -3,6 +3,7 @@ package space.cuongnh2k.rest.auth.impl;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +48,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtCrypto jwtCrypto;
     private final SendEmailUtil sendEmailUtil;
     private final HttpServletRequest request;
+    @Value("${application.activation-code-age}")
+    private Integer ACTIVATION_CODE_AGE;
 
     @Override
     public ResponseEntity<BaseResponseDto> login(LoginReq req) {
@@ -64,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
 
             ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
             if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
-                    .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                    .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
 
                 activationCodePrt.setAccount(AccountActivationPrt.builder()
                         .code(activationCode)
@@ -120,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
                 space.cuongnh2k.rest.device.query.ActivationCodePrt activationCodePrt
                         = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), space.cuongnh2k.rest.device.query.ActivationCodePrt.class);
                 if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
-                        .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                        .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
 
                     activationCodePrt.setDevice(DeviceActivationPrt.builder()
                             .code(activationCode)

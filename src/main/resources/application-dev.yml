@@ -24,6 +24,7 @@ application:
     secret-key: a3f52f3a-5d8f-4f80-bc97-8d51a9fc4c9c
     access-token-age: 3600000
     refresh-token-age: 31536000000
+  activation-code-age: 30
 spring.datasource:
   url: jdbc:mysql://13.229.201.209:3306/COMMON?allowPublicKeyRetrieval=true&useSSL=false
   username: cuongnh2k

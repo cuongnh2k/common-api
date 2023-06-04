@@ -3,6 +3,7 @@ package space.cuongnh2k.rest.account.impl;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -37,6 +38,8 @@ public class AccountServiceImpl implements AccountService {
     private final SendEmailUtil sendEmailUtil;
     private final AuthContext authContext;
     private final DaoAuthenticationProvider daoAuthenticationProvider;
+    @Value("${application.activation-code-age}")
+    private Integer ACTIVATION_CODE_AGE;
 
     @Override
     public List<ExtractAccountRes> extractAccount(ExtractAccountReq req) {
@@ -93,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
 
         ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
         if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
-                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
         if (!activationCodePrt.getAccount().getCode().equals(req.getActivationCode())) {
@@ -145,7 +148,7 @@ public class AccountServiceImpl implements AccountService {
         ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
 
         if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
-                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
 
             String code = UUID.randomUUID().toString();
             activationCodePrt.setResetPassword(ResetPasswordActivationPrt.builder()
@@ -174,7 +177,7 @@ public class AccountServiceImpl implements AccountService {
 
         ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
         if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
-                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
 

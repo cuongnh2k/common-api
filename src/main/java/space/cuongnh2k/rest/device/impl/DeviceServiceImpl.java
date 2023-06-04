@@ -3,6 +3,7 @@ package space.cuongnh2k.rest.device.impl;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -30,6 +31,8 @@ public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
     private final AuthContext authContext;
     private final HttpServletRequest request;
+    @Value("${application.activation-code-age}")
+    private Integer ACTIVATION_CODE_AGE;
 
     @Override
     public void activeDevice(ActiveDeviceReq req) {
@@ -41,7 +44,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
         ActivationCodePrt activationCodePrt = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), ActivationCodePrt.class);
         if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
-                .plusMinutes(5).compareTo(LocalDateTime.now()) < 0) {
+                .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
         if (!activationCodePrt.getDevice().getCode().equals(req.getActivationCode())) {
