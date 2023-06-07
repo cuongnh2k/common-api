@@ -48,6 +48,12 @@ public class AccountController {
         return BaseResponseDto.success("Một email chứa mã xác nhận thiết lập lại mật khẩu đã được gửi cho bạn");
     }
 
+    @PostMapping("/confirm-reset-password")
+    public ResponseEntity<BaseResponseDto> confirmResetPasswordV1(@RequestParam @UUID String accountId) {
+        accountService.confirmResetPassword(accountId);
+        return BaseResponseDto.success("Một email chứa mã xác nhận thiết lập lại mật khẩu đã được gửi cho bạn");
+    }
+
     @PostMapping("/get-new-password")
     public ResponseEntity<BaseResponseDto> getNewPassword(@RequestBody @Valid GetNewPasswordReq req) {
         return BaseResponseDto.success(accountService.getNewPassword(req));

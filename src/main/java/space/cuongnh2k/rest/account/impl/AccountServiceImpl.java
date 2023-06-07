@@ -185,7 +185,7 @@ public class AccountServiceImpl implements AccountService {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
 
-        String password = UUID.randomUUID().toString();
+        String password = UUID.randomUUID().toString().substring(0, 8);
         if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                 .password(passwordEncoder.encode(password))
                 .id(req.getId())
