@@ -19,8 +19,8 @@ public abstract class BaseProduceDto<ID> {
     private ID id;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Timestamp createdDate;
+    private Timestamp createdTime;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Timestamp updatedDate;
+    private Timestamp updatedTime;
 }

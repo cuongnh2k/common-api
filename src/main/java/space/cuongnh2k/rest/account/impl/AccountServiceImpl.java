@@ -70,11 +70,11 @@ public class AccountServiceImpl implements AccountService {
         ActivationCodePrt activationCodePrt = ActivationCodePrt.builder()
                 .account(AccountActivationPrt.builder()
                         .code(code)
-                        .createdDate(LocalDateTime.now().toString())
+                        .createdTime(LocalDateTime.now().toString())
                         .build())
                 .resetPassword(ResetPasswordActivationPrt.builder()
                         .code(code)
-                        .createdDate(LocalDateTime.now().toString())
+                        .createdTime(LocalDateTime.now().toString())
                         .build())
                 .build();
         prt.setActivationCode(new Gson().toJson(activationCodePrt));
@@ -95,7 +95,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
-        if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
+        if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedTime())
                 .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }
@@ -147,13 +147,13 @@ public class AccountServiceImpl implements AccountService {
         }
         ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
 
-        if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
+        if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedTime())
                 .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
 
             String code = UUID.randomUUID().toString();
             activationCodePrt.setResetPassword(ResetPasswordActivationPrt.builder()
                     .code(code)
-                    .createdDate(LocalDateTime.now().toString())
+                    .createdTime(LocalDateTime.now().toString())
                     .build());
 
             if (accountRepository.updateAccount(UpdateAccountPrt.builder()
@@ -176,7 +176,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         ActivationCodePrt activationCodePrt = new Gson().fromJson(rss.get(0).getActivationCode(), ActivationCodePrt.class);
-        if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedDate())
+        if (LocalDateTime.parse(activationCodePrt.getResetPassword().getCreatedTime())
                 .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }

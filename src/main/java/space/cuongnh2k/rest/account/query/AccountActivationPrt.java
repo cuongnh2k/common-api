@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class AccountActivationPrt {
     private String code;
-    private String createdDate;
+    private String createdTime;
 }

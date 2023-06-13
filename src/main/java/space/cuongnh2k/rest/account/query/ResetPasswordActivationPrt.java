@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class ResetPasswordActivationPrt {
     private String code;
-    private String createdDate;
+    private String createdTime;
 }

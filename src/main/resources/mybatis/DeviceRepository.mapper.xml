@@ -9,8 +9,8 @@
         USER_AGENT,
         ACTIVATION_CODE,
         IS_ACTIVATED,
-        CREATED_DATE,
-        UPDATED_DATE
+        CREATED_TIME,
+        UPDATED_TIME
         FROM DEVICE
         <where>
             IS_DELETED = 'NO'

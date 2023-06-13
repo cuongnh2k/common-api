@@ -43,7 +43,7 @@ public class DeviceServiceImpl implements DeviceService {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
         ActivationCodePrt activationCodePrt = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), ActivationCodePrt.class);
-        if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
+        if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedTime())
                 .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0004);
         }

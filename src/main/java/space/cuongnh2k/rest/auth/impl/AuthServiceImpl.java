@@ -66,12 +66,12 @@ public class AuthServiceImpl implements AuthService {
         if (listAccountRss.get(0).getIsActivated() == IsActivated.NO) {
 
             ActivationCodePrt activationCodePrt = new Gson().fromJson(listAccountRss.get(0).getActivationCode(), ActivationCodePrt.class);
-            if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedDate())
+            if (LocalDateTime.parse(activationCodePrt.getAccount().getCreatedTime())
                     .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
 
                 activationCodePrt.setAccount(AccountActivationPrt.builder()
                         .code(activationCode)
-                        .createdDate(LocalDateTime.now().toString())
+                        .createdTime(LocalDateTime.now().toString())
                         .build());
                 if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                         .id(listAccountRss.get(0).getId())
@@ -105,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
                     .activationCode(new Gson().toJson(space.cuongnh2k.rest.device.query.ActivationCodePrt.builder()
                             .device(DeviceActivationPrt.builder()
                                     .code(activationCode)
-                                    .createdDate(LocalDateTime.now().toString())
+                                    .createdTime(LocalDateTime.now().toString())
                                     .build())
                             .build()))
                     .build()) != 1) {
@@ -122,12 +122,12 @@ public class AuthServiceImpl implements AuthService {
             if (listDeviceRss.get(0).getIsActivated() == IsActivated.NO) {
                 space.cuongnh2k.rest.device.query.ActivationCodePrt activationCodePrt
                         = new Gson().fromJson(listDeviceRss.get(0).getActivationCode(), space.cuongnh2k.rest.device.query.ActivationCodePrt.class);
-                if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedDate())
+                if (LocalDateTime.parse(activationCodePrt.getDevice().getCreatedTime())
                         .plusMinutes(ACTIVATION_CODE_AGE).compareTo(LocalDateTime.now()) < 0) {
 
                     activationCodePrt.setDevice(DeviceActivationPrt.builder()
                             .code(activationCode)
-                            .createdDate(LocalDateTime.now().toString())
+                            .createdTime(LocalDateTime.now().toString())
                             .build());
 
                     devicePrt = UpdateDevicePrt.builder()

@@ -15,6 +15,6 @@ public class DeviceRss {
     private String userAgent;
     private String activationCode;
     private IsActivated isActivated;
-    private Timestamp createdDate;
-    private Timestamp updatedDate;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
 }

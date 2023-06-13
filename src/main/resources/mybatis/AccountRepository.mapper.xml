@@ -13,7 +13,7 @@
         FIRST_NAME,
         LAST_NAME,
         AVATAR_FILE_ID,
-        UPDATED_DATE
+        UPDATED_TIME
         FROM ACCOUNT
         <where>
             IS_DELETED = 'NO'

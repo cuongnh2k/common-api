@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class DeviceActivationPrt {
     private String code;
-    private String createdDate;
+    private String createdTime;
 }
