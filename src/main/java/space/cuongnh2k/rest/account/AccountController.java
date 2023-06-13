@@ -17,7 +17,6 @@ import space.cuongnh2k.rest.account.dto.*;
 public class AccountController {
     private final AccountService accountService;
 
-    @Privileges("")
     @PostMapping("/extract")
     public ResponseEntity<BaseResponseDto> extractAccount(@RequestBody @Valid ExtractAccountReq req) {
         return BaseResponseDto.success(accountService.extractAccount(req));
