@@ -16,6 +16,7 @@ import space.cuongnh2k.core.enums.BusinessLogicEnum;
 import space.cuongnh2k.core.enums.IsActivated;
 import space.cuongnh2k.core.exceptions.BusinessLogicException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
+import space.cuongnh2k.core.utils.RandomUtil;
 import space.cuongnh2k.core.utils.SendEmailUtil;
 import space.cuongnh2k.rest.account.AccountRepository;
 import space.cuongnh2k.rest.account.AccountService;
@@ -185,7 +186,7 @@ public class AccountServiceImpl implements AccountService {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0003);
         }
 
-        String password = UUID.randomUUID().toString().substring(0, 8);
+        String password = new RandomUtil().randomPassword();
         if (accountRepository.updateAccount(UpdateAccountPrt.builder()
                 .password(passwordEncoder.encode(password))
                 .id(req.getId())
