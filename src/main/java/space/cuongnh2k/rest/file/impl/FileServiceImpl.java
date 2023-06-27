@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
+import space.cuongnh2k.core.base.BaseResponseDto;
 import space.cuongnh2k.core.context.AuthContext;
 import space.cuongnh2k.core.enums.AccessEnum;
 import space.cuongnh2k.core.enums.BusinessLogicEnum;
@@ -22,7 +24,8 @@ import space.cuongnh2k.core.exceptions.ForbiddenException;
 import space.cuongnh2k.core.utils.BeanCopyUtil;
 import space.cuongnh2k.rest.file.FileRepository;
 import space.cuongnh2k.rest.file.FileService;
-import space.cuongnh2k.rest.file.dto.FileRes;
+import space.cuongnh2k.rest.file.dto.DownloadFileRes;
+import space.cuongnh2k.rest.file.dto.UploadFileRes;
 import space.cuongnh2k.rest.file.query.CreateFilePrt;
 import space.cuongnh2k.rest.file.query.DeleteFilePrt;
 import space.cuongnh2k.rest.file.query.FileRss;
@@ -43,11 +46,14 @@ public class FileServiceImpl implements FileService {
     private final AuthContext authContext;
     private final FileRepository fileRepository;
 
-    @Value("${application.bucket-name}")
-    private String BUCKET_NAME;
+    @Value("${application.bucket.private}")
+    private String BUCKET_PRIVATE;
+
+    @Value("${application.bucket.public}")
+    private String BUCKET_PUBLIC;
 
     @Override
-    public List<FileRes> uploadFile(AccessEnum access, List<MultipartFile> files) {
+    public List<UploadFileRes> uploadFile(AccessEnum access, List<MultipartFile> files) {
         List<CreateFilePrt> listPrt = new ArrayList<>();
         //valid
         for (MultipartFile file : files) {
@@ -57,6 +63,7 @@ public class FileServiceImpl implements FileService {
             if (fileExtension.equals("")) {
                 throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0016);
             }
+
             String id = UUID.randomUUID().toString();
             listPrt.add(CreateFilePrt.builder()
                     .id(id)
@@ -66,6 +73,9 @@ public class FileServiceImpl implements FileService {
                             : originalFilename.toLowerCase())
                     .contentType(file.getContentType())
                     .size(file.getSize())
+                    .url(access == AccessEnum.PRIVATE ?
+                            null
+                            : "https://s3.ap-southeast-1.amazonaws.com/" + BUCKET_PUBLIC + "/" + authContext.getAccountId() + "/" + id + "." + fileExtension.toLowerCase())
                     .access(access)
                     .fileExtension(fileExtension.toLowerCase())
                     .file(file)
@@ -80,7 +90,7 @@ public class FileServiceImpl implements FileService {
             metadata.setContentLength(o.getFile().getSize());
             metadata.setContentType(o.getContentType());
             try {
-                amazonS3.putObject(BUCKET_NAME,
+                amazonS3.putObject(access == AccessEnum.PRIVATE ? BUCKET_PRIVATE : BUCKET_PUBLIC,
                         authContext.getAccountId() + "/" + o.getId() + "." + o.getFileExtension(),
                         o.getFile().getInputStream(),
                         metadata);
@@ -91,7 +101,7 @@ public class FileServiceImpl implements FileService {
         });
         return listPrt.stream()
                 .map(o -> {
-                    FileRes res = new FileRes();
+                    UploadFileRes res = new UploadFileRes();
                     BeanCopyUtil.copyProperties(res, o);
                     return res;
                 })
@@ -112,7 +122,7 @@ public class FileServiceImpl implements FileService {
         }
         try {
             listFileRss.forEach(o ->
-                    amazonS3.deleteObject(BUCKET_NAME,
+                    amazonS3.deleteObject(o.getAccess() == AccessEnum.PRIVATE ? BUCKET_PRIVATE : BUCKET_PUBLIC,
                             authContext.getAccountId() + "/" + o.getId() + o.getName().substring(o.getName().lastIndexOf(".")))
 
             );
@@ -124,7 +134,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<byte[]> downloadFile(String id) {
+    public ResponseEntity<?> downloadFile(String id, Boolean responseBase64) {
         List<FileRss> listFileRss = fileRepository.getFile(GetFilePrt.builder()
                 .id(id)
                 .build());
@@ -136,8 +146,19 @@ public class FileServiceImpl implements FileService {
         }
         try {
             S3Object s3object = amazonS3.getObject(
-                    new GetObjectRequest(BUCKET_NAME,
+                    new GetObjectRequest(listFileRss.get(0).getAccess() == AccessEnum.PRIVATE ? BUCKET_PRIVATE : BUCKET_PUBLIC,
                             listFileRss.get(0).getOwnerId() + "/" + listFileRss.get(0).getId() + listFileRss.get(0).getName().substring(listFileRss.get(0).getName().lastIndexOf("."))));
+            if (responseBase64) {
+                return BaseResponseDto.success(DownloadFileRes.builder()
+                        .id(listFileRss.get(0).getId())
+                        .name(listFileRss.get(0).getName())
+                        .contentType(listFileRss.get(0).getContentType())
+                        .size(listFileRss.get(0).getSize())
+                        .access(listFileRss.get(0).getAccess())
+                        .url(listFileRss.get(0).getUrl())
+                        .file(Base64.encodeAsString(new InputStreamResource(s3object.getObjectContent()).getContentAsByteArray()))
+                        .build());
+            }
             return ResponseEntity.ok()
                     .header("Content-Type", listFileRss.get(0).getContentType())
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + listFileRss.get(0).getName() + "\"")

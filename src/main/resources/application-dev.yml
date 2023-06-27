@@ -16,7 +16,9 @@ cloud:
       accessKey: AKIAYVGDULSKVEWXTFGR
       secretKey: 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
 application:
-  bucket-name: space.cuongnh2k.s3.bucket.private
+  bucket:
+    private: space.cuongnh2k.s3.bucket.private
+    public: space.cuongnh2k.s3.bucket.public
   email:
     username: cuongnh3@rikkeisoft.com
     password: qzbhybpogwafideq

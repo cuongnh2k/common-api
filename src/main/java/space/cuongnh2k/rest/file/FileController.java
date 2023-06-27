@@ -35,7 +35,8 @@ public class FileController {
 
     @Privileges("OPTIONAL")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable @UUID String id) {
-        return fileService.downloadFile(id);
+    public ResponseEntity<?> downloadFile(@PathVariable @UUID String id,
+                                          @RequestParam(defaultValue = "true") Boolean responseBase64) {
+        return fileService.downloadFile(id, responseBase64);
     }
 }

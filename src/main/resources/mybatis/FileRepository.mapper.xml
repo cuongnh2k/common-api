@@ -11,6 +11,7 @@
         NAME,
         CONTENT_TYPE,
         SIZE,
+        URL,
         ACCESS
         FROM FILE
         <where>
@@ -32,6 +33,7 @@
         NAME,
         CONTENT_TYPE,
         SIZE,
+        URL,
         ACCESS)
         VALUES
         <foreach collection="list" item="element" index="index" open="(" separator="),(" close=")">
@@ -40,6 +42,7 @@
             #{element.name},
             #{element.contentType},
             #{element.size},
+            #{element.url},
             #{element.access}
         </foreach>
     </insert>

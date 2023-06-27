@@ -14,5 +14,6 @@ public class FileRss {
     private String name;
     private String contentType;
     private Long size;
+    private String url;
     private AccessEnum access;
 }
