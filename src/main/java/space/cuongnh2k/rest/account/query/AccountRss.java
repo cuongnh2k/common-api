@@ -17,5 +17,6 @@ public class AccountRss {
     private String firstName;
     private String lastName;
     private String avatarFileId;
+    private String avatarUrl;
     private LocalDateTime updatedTime;
 }

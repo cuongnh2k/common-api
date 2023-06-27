@@ -13,6 +13,7 @@
         FIRST_NAME,
         LAST_NAME,
         AVATAR_FILE_ID,
+        AVATAR_URL,
         UPDATED_TIME
         FROM ACCOUNT
         <where>
@@ -55,6 +56,7 @@
             <if test="firstName != null">FIRST_NAME = #{firstName},</if>
             <if test="lastName != null">LAST_NAME = #{lastName},</if>
             <if test="avatarFileId != null">AVATAR_FILE_ID = #{avatarFileId},</if>
+            <if test="avatarUrl != null">AVATAR_URL = #{avatarUrl},</if>
             <if test="isActivated != null">IS_ACTIVATED = #{isActivated},</if>
             <if test="activationCode != null">ACTIVATION_CODE = #{activationCode},</if>
         </set>
