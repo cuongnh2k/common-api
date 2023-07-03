@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
     private Integer ACTIVATION_CODE_AGE;
 
     @Override
-    public List<ExtractAccountRes> extractAccount(ExtractAccountReq req) {
+    public ExtractAccountRes extractAccount(ExtractAccountReq req) {
         List<AccountRss> rss = accountRepository.getAccount(GetAccountPrt.builder()
                 .emails(req.getEmails())
                 .ids(req.getIds())
@@ -53,12 +53,12 @@ public class AccountServiceImpl implements AccountService {
             throw new BusinessLogicException(BusinessLogicEnum.BUSINESS_LOGIC_0001);
         }
         return rss.stream()
+                .findFirst()
                 .map(o -> {
                     ExtractAccountRes res = new ExtractAccountRes();
                     BeanCopyUtil.copyProperties(res, o);
                     return res;
-                })
-                .collect(Collectors.toList());
+                }).orElse(null);
     }
 
     @Override

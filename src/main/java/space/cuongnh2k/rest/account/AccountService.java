@@ -5,7 +5,7 @@ import space.cuongnh2k.rest.account.dto.*;
 import java.util.List;
 
 public interface AccountService {
-    List<ExtractAccountRes> extractAccount(ExtractAccountReq req);
+    ExtractAccountRes extractAccount(ExtractAccountReq req);
 
     void createAccount(CreateAccountReq req);
 
